@@ -1442,10 +1442,64 @@ const SFX = (function () {
       if (melody && i % 2 === 1) { const sc = [220, 261.6, 293.7, 329.6, 392, 440]; osc('triangle', sc[(i * 7 + bar * 3) % sc.length] * 2, dest, t, eighth * 1.5, 0.12); }
     }, eighth);
   }
+  function panTo(dest, p) {                               // a stereo position, if the browser can
+    if (!ctx.createStereoPanner) return dest;
+    const sp = ctx.createStereoPanner(); sp.pan.value = p; sp.connect(dest); keep(sp); return sp;
+  }
+  function footstep(dest, t, vol, p) {                    // a soft thud and a scuff on the ground
+    const d = panTo(dest, p), o = ctx.createOscillator(), g = ctx.createGain();
+    o.frequency.setValueAtTime(115, t); o.frequency.exponentialRampToValueAtTime(55, t + 0.07);
+    g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.1);
+    o.connect(g); g.connect(d); o.start(t); o.stop(t + 0.12); keep(o);
+    burst(d, t, 0.07, vol * 0.9, 900, false);
+  }
+  function giggle(dest, t, f0, p) {                       // a few quick "ha" bursts, the pitch sagging
+    const d = panTo(dest, p), n = 3 + Math.floor(Math.random() * 3);
+    for (let k = 0; k < n; k++) {
+      const tt = t + k * 0.15, o = ctx.createOscillator(), a = ctx.createBiquadFilter(), b = ctx.createBiquadFilter(), g = ctx.createGain();
+      o.type = 'sawtooth';
+      o.frequency.setValueAtTime(f0 * (1 - 0.04 * k) * 1.15, tt); o.frequency.exponentialRampToValueAtTime(f0 * (1 - 0.04 * k), tt + 0.1);
+      a.type = 'bandpass'; a.frequency.value = 800; a.Q.value = 3; b.type = 'bandpass'; b.frequency.value = 1250; b.Q.value = 4;
+      g.gain.setValueAtTime(0.0001, tt); g.gain.exponentialRampToValueAtTime(0.6, tt + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, tt + 0.11);
+      o.connect(a); o.connect(b); a.connect(g); b.connect(g); g.connect(d); o.start(tt); o.stop(tt + 0.14); keep(o);
+    }
+  }
   return {
     get muted() { return muted; },
     resume: function () { if (ctx && ctx.state === 'suspended') ctx.resume().catch(function () {}); },
     setMuted: function (m) { muted = !!m; if (master) master.gain.setTargetAtTime(muted ? 0 : 1, ctx.currentTime, 0.05); },
+    arrival: function () {                                // the 6.4 s before the flash: the young people run in and huddle
+      if (!ensure()) return;
+      const t0 = ctx.currentTime + 0.05, out = ctx.createGain();
+      out.gain.value = 1; out.connect(master); keep(out);
+      const crowd = ctx.createBufferSource(), cf = ctx.createBiquadFilter(), cg = ctx.createGain();   // a crowd murmur that swells
+      crowd.buffer = noiseBuffer(2); crowd.loop = true;
+      cf.type = 'bandpass'; cf.frequency.value = 600; cf.Q.value = 0.5;
+      cg.gain.setValueAtTime(0.0001, t0); cg.gain.linearRampToValueAtTime(0.09, t0 + 1.2); cg.gain.linearRampToValueAtTime(0.14, t0 + 5.5);
+      crowd.connect(cf); cf.connect(cg); cg.connect(out); crowd.start(t0); keep(crowd); keep(cg);
+      beat(bus(0.08, 1200, 1.5), 118, true);              // the show, far away
+      for (let lane = 0; lane < 4; lane++) {              // running feet from the sides and from the stage: louder as they near
+        let t = 0.5 + lane * 0.11, side = [-0.8, 0.8, -0.3, 0.3][lane];
+        while (t < 5.6) {
+          const p = (t - 0.5) / 5.1, vol = 0.03 + 0.2 * Math.sin(Math.PI * Math.min(1, p * 1.15));
+          footstep(out, t0 + t, vol, side + (Math.random() - 0.5) * 0.3);
+          t += 0.3 + 0.12 * Math.random();
+        }
+      }
+      for (let k = 0; k < 8; k++) giggle(out, t0 + 3.7 + Math.random() * 2.1, 330 + Math.random() * 120, (Math.random() - 0.5) * 1.4);   // laughing as they squeeze in
+    },
+    whoosh: function () {                                 // the phone rising
+      if (!ensure()) return;
+      const t = ctx.currentTime + 0.02, s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+      s.buffer = noiseBuffer(1); f.type = 'bandpass'; f.Q.value = 1.2;
+      f.frequency.setValueAtTime(300, t); f.frequency.exponentialRampToValueAtTime(2200, t + 0.6);
+      g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.35, t + 0.25); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.7);
+      s.connect(f); f.connect(g); g.connect(master); s.start(t); s.stop(t + 0.8); keep(s);
+    },
+    ticks: function (n, seconds) {                        // soft pops while the likes climb
+      if (!ensure()) return;
+      for (let k = 0; k < n; k++) osc('sine', 1400 + k * 18, master, ctx.currentTime + 0.02 + (seconds * k) / n, 0.05, 0.08);
+    },
     click: function () {                                  // a camera shutter: two quick clicks
       if (!ensure()) return;
       const t = ctx.currentTime + 0.02;
@@ -1500,12 +1554,13 @@ document.addEventListener('pointerdown', function () { SFX.resume(); }, true);  
 
 /* Count a number up (the likes on the post). */
 function countUp(el, to, ms) {
-  const t0 = performance.now();
-  (function frame(now) {
-    const k = Math.min(1, (now - t0) / ms), e = 1 - Math.pow(1 - k, 3);
+  const t0 = Date.now();
+  const timer = setInterval(function () {                // a timer, not an animation frame: it also runs in a background tab
+    const k = Math.min(1, (Date.now() - t0) / ms), e = 1 - Math.pow(1 - k, 3);
     el.textContent = Math.round(to * e);
-    if (k < 1 && el.isConnected) requestAnimationFrame(frame);
-  })(t0);
+    if (k >= 1 || !el.isConnected) clearInterval(timer);
+  }, 40);
+  hookTimers.push(timer);
 }
 
 
@@ -1514,7 +1569,7 @@ function countUp(el, to, ms) {
    =================================================================== */
 const hookTimers = [];
 function hookAfter(ms, fn) { hookTimers.push(setTimeout(fn, ms)); }
-function hookClear() { hookTimers.forEach(clearTimeout); hookTimers.length = 0; SFX.stopAll(); }
+function hookClear() { hookTimers.forEach(function (t) { clearTimeout(t); clearInterval(t); }); hookTimers.length = 0; SFX.stopAll(); }
 function reducedMotion() { return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
 
 /* party (slide 29): the young people gather (CSS), a flash and a camera click, party music heard from
@@ -1527,20 +1582,29 @@ HOOKS['party'] = {
     refreshSoundButtons();
     if (reducedMotion()) { n.textContent = '128'; hookAfter(300, function () { SFX.play('party'); }); return; }
     n.textContent = '0';
-    function go() {                                   // the pose is held: flash, click, music, phone, likes
+    const FLASH_AT = 6.5;                              // seconds into the clip: the pose has settled
+    let poll = null, started = false;
+    function go() {                                    // freeze, flash, click, music, phone, likes
       if (s.classList.contains('party-go')) return;
+      clearInterval(poll);
+      v.pause();
       s.classList.add('party-go');
+      SFX.stopAll();
       SFX.click();
       hookAfter(500, function () { SFX.play('party'); });
-      hookAfter(2700, function () { countUp(n, 128, 1300); });
+      hookAfter(650, function () { SFX.whoosh(); });
+      hookAfter(2700, function () { countUp(n, 128, 1300); SFX.ticks(14, 1.3); });
     }
+    v.onplaying = function () { if (!started) { started = true; SFX.play('arrival'); } };
     v.onended = go;
     try { v.currentTime = 0; } catch (e) {}
     const p = v.play();
     if (p && p.catch) p.catch(function () { hookAfter(500, go); });   // the browser refused to play: carry on
-    hookAfter(10000, go);                              // safety: never stay stuck on the video
+    poll = setInterval(function () { if (v.currentTime >= FLASH_AT) go(); }, 50);
+    hookTimers.push(poll);
+    hookAfter(12000, go);                              // safety: never stay stuck on the video
   },
-  leave: function (s) { s.classList.remove('party-go'); const v = s.querySelector('.party-video'); if (v) { v.onended = null; v.pause(); } hookClear(); }
+  leave: function (s) { s.classList.remove('party-go'); const v = s.querySelector('.party-video'); if (v) { v.onended = null; v.onplaying = null; v.pause(); } hookClear(); }
 };
 /* finish (slide 32): the drone loops over the festival, with the show far away and the rotors close by. */
 HOOKS['finish'] = {
