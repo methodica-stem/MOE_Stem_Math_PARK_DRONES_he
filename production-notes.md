@@ -80,6 +80,11 @@ listed where they change what the screen looks like.
 
 **Open (party): real "huddle" animation.** The developer wants the young people animated as they squeeze together for the photo; the current version only slides two halves of the photo together. A flat photo cannot give that in code. Plan: a short clip made in Flow from the photo (`assets/images/party-bg.jpg`, the exact end frame), 16:9, 1920×1080, 3–5 s, no audio (the click and the music are drawn in code), ending on the same group pose. It replaces the first 2 s (`.gather` layers) and the flash follows its last frame. Until it arrives the split-photo version stays.
 
+**Open (same approach, developer will do these after the party screen): screens 10 and 12 want real clips too.**
+- **10 · test-six (slide 24):** "what the drone films", a gentle automatic loop. Source picture `assets/images/test-six-view.jpg` (1685×959 at x 118, y 20). Ask for a slow aerial drift over the lit food-truck square, no cuts, loopable. Today: a slow zoom of the still.
+- **12 · park-lights (slide 27):** the park lights twinkle, a loop. Only the window view needs the clip (the layer `park-lights-lights.png` sits at x 268, y 219, 1630×481 over `park-lights-bg.jpg`; Erez and Lihi stay as pictures on top). Static camera, only the lights change, first and last frame equal so it loops without a jump. Today: the lights layer fades in and out.
+- For all three: no audio, H.264 MP4 ≤ 25 MB, muted autoplay loop; the descriptive text stays on the screen for screen readers.
+
 ### 15 · q7 (slides 30–31) — single choice
 - Correct: option 2 (the median).
 - Feedback has "💡נקודה למחשבה" with two words highlighted (רוב הטיסות, החציון). Design note on slide 31: "עיצוב משוב" — the feedback box is bigger.
