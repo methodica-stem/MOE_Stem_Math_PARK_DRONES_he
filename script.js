@@ -32,6 +32,7 @@ window.lomdaState = {
 
 /* Per-screen extras, keyed by data-sid. Both functions are optional.
    enter(screen, n)            runs every time the screen is entered
+   leave(screen, n)            runs when the learner moves away from the screen
    resolved(screen, n, outcome) runs once a question is answered
                                ('correct' | 'partial' | 'wrong2')
    grade(values)               decides a typed answer (data-grade="hook"):
@@ -80,6 +81,9 @@ if (window.ResizeObserver) new ResizeObserver(scaleApp).observe(document.documen
 /* ---------------- Navigation ---------------- */
 function goTo(n) {
   if (n < 1 || n > TOTAL_SCREENS) return;
+  const prev = screenEl(currentScreen);
+  const prevHook = prev && HOOKS[sidOf(prev)];
+  if (prevHook && prevHook.leave) prevHook.leave(prev, currentScreen);
   pauseAllMedia();
   closeAllOverlays();
   document.querySelectorAll('.screen').forEach(function (s) { s.classList.remove('active'); });
@@ -1364,6 +1368,179 @@ document.addEventListener('mouseover', function (e) { const t = !termTouch && e.
 document.addEventListener('mouseout', function (e) { const t = !termTouch && e.target.closest && e.target.closest('.term'); if (t) showTerm(t, false); });
 document.addEventListener('focusin', function (e) { const t = !termTouch && e.target.closest && e.target.closest('.term'); if (t) showTerm(t, true); });
 document.addEventListener('focusout', function (e) { const t = e.target.closest && e.target.closest('.term'); if (t) showTerm(t, false); });   // tapping elsewhere closes it too
+
+
+/* ===================================================================
+   Sound effects drawn in code (Web Audio) - no audio files, nothing to license or load.
+   Used by the animation screens (party, finish). The sound starts with the screen the
+   learner just opened with a click, stops when they leave, and the round speaker button
+   (.sound-btn) mutes it; the choice stays for the rest of the lomda.
+   SFX.play('party' | 'show' | 'drone'), SFX.click(), SFX.stopAll(), SFX.setMuted(bool).
+   Real recordings can replace these later: drop MP3s in assets/audio and play them from the hook.
+   =================================================================== */
+const SFX = (function () {
+  let ctx = null, master = null, muted = false, nodes = [], timers = [];
+  function ensure() {
+    if (!ctx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+      ctx = new AC();
+      master = ctx.createGain();
+      master.gain.value = muted ? 0 : 1;
+      master.connect(ctx.destination);
+    }
+    if (ctx.state === 'suspended') ctx.resume().catch(function () {});
+    return ctx;
+  }
+  function keep(n) { nodes.push(n); return n; }
+  function noiseBuffer(sec) {
+    const b = ctx.createBuffer(1, Math.floor(ctx.sampleRate * sec), ctx.sampleRate), d = b.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    return b;
+  }
+  function osc(type, freq, dest, t0, dur, vol) {          // one short note with a soft envelope
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = type; o.frequency.value = freq;
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(vol, t0 + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    o.connect(g); g.connect(dest); o.start(t0); o.stop(t0 + dur + 0.05); keep(o);
+  }
+  function burst(dest, t0, dur, vol, freq, hp) {          // a short noise burst (hi-hat, shutter)
+    const s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+    s.buffer = noiseBuffer(dur + 0.05);
+    f.type = hp ? 'highpass' : 'bandpass'; f.frequency.value = freq; f.Q.value = 0.8;
+    g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    s.connect(f); f.connect(g); g.connect(dest); s.start(t0); s.stop(t0 + dur + 0.05); keep(s);
+  }
+  function bus(vol, cutoff, fade) {
+    const g = ctx.createGain(), f = ctx.createBiquadFilter();
+    f.type = 'lowpass'; f.frequency.value = cutoff;
+    g.gain.setValueAtTime(0.0001, ctx.currentTime);
+    g.gain.linearRampToValueAtTime(vol, ctx.currentTime + fade);
+    f.connect(g); g.connect(master); keep(g); keep(f);
+    return f;
+  }
+  function loopScheduler(step, every) {                   // schedules notes a little ahead, forever
+    let next = ctx.currentTime + 0.05, i = 0;
+    function tick() { while (next < ctx.currentTime + 0.6) { step(next, i++); next += every; } }
+    tick(); timers.push(setInterval(tick, 200));
+  }
+  const ROOTS = [55, 43.65, 65.41, 49];
+  function beat(dest, bpm, melody) {
+    const eighth = 60 / bpm / 2;
+    loopScheduler(function (t, i) {
+      const bar = Math.floor(i / 8) % 4, root = ROOTS[bar];
+      if (i % 2 === 0) {                                  // kick on every beat
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.frequency.setValueAtTime(140, t); o.frequency.exponentialRampToValueAtTime(42, t + 0.14);
+        g.gain.setValueAtTime(0.9, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.22);
+        o.connect(g); g.connect(dest); o.start(t); o.stop(t + 0.25); keep(o);
+      } else burst(dest, t, 0.05, 0.25, 7000, true);       // hi-hat off the beat
+      if (i % 8 === 0) { [1, 1.25, 1.5].forEach(function (r) { osc('sawtooth', root * 4 * r, dest, t, eighth * 7.5, 0.05); }); }
+      osc('sawtooth', root * (i % 4 === 3 ? 2 : 1), dest, t, eighth * 0.9, 0.22);
+      if (melody && i % 2 === 1) { const sc = [220, 261.6, 293.7, 329.6, 392, 440]; osc('triangle', sc[(i * 7 + bar * 3) % sc.length] * 2, dest, t, eighth * 1.5, 0.12); }
+    }, eighth);
+  }
+  return {
+    get muted() { return muted; },
+    resume: function () { if (ctx && ctx.state === 'suspended') ctx.resume().catch(function () {}); },
+    setMuted: function (m) { muted = !!m; if (master) master.gain.setTargetAtTime(muted ? 0 : 1, ctx.currentTime, 0.05); },
+    click: function () {                                  // a camera shutter: two quick clicks
+      if (!ensure()) return;
+      const t = ctx.currentTime + 0.02;
+      burst(master, t, 0.045, 0.7, 2600, false); burst(master, t + 0.09, 0.07, 0.55, 1800, false);
+    },
+    play: function (name) {
+      if (!ensure()) return;
+      if (name === 'party') {                             // party music heard through a wall
+        beat(bus(0.32, 650, 1.5), 108, false);
+      } else if (name === 'show') {                       // a crowd murmur and a band far away
+        const crowd = ctx.createBufferSource(), cf = ctx.createBiquadFilter(), cg = ctx.createGain();
+        crowd.buffer = noiseBuffer(2); crowd.loop = true;
+        cf.type = 'bandpass'; cf.frequency.value = 650; cf.Q.value = 0.5;
+        cg.gain.setValueAtTime(0.0001, ctx.currentTime); cg.gain.linearRampToValueAtTime(0.16, ctx.currentTime + 1.5);
+        crowd.connect(cf); cf.connect(cg); cg.connect(master); crowd.start(); keep(crowd); keep(cg);
+        beat(bus(0.2, 1500, 2), 118, true);
+      } else if (name === 'drone') {                      // rotors: a buzz with a fast flutter, drifting left and right
+        const out = ctx.createGain(), lp = ctx.createBiquadFilter(), flutter = ctx.createGain(), lfo = ctx.createOscillator(), lfoDepth = ctx.createGain();
+        lp.type = 'lowpass'; lp.frequency.value = 900;
+        out.gain.setValueAtTime(0.0001, ctx.currentTime); out.gain.linearRampToValueAtTime(0.09, ctx.currentTime + 1.5);
+        flutter.gain.value = 0.7; lfo.frequency.value = 26; lfoDepth.gain.value = 0.3;
+        lfo.connect(lfoDepth); lfoDepth.connect(flutter.gain); lfo.start(); keep(lfo);
+        [168, 171, 84].forEach(function (f) { const o = ctx.createOscillator(); o.type = 'sawtooth'; o.frequency.value = f; o.connect(lp); o.start(); keep(o); });
+        lp.connect(flutter);
+        if (ctx.createStereoPanner) {
+          const pan = ctx.createStereoPanner(), pl = ctx.createOscillator(), pd = ctx.createGain();
+          pl.frequency.value = 0.1; pd.gain.value = 0.5; pl.connect(pd); pd.connect(pan.pan); pl.start(); keep(pl);
+          flutter.connect(pan); pan.connect(out);
+        } else flutter.connect(out);
+        out.connect(master); keep(out);
+      }
+    },
+    stopAll: function () {
+      timers.forEach(function (t) { clearInterval(t); }); timers = [];
+      nodes.forEach(function (n) { try { n.stop && n.stop(); } catch (e) {} try { n.disconnect(); } catch (e) {} });
+      nodes = [];
+    }
+  };
+})();
+function refreshSoundButtons() {
+  document.querySelectorAll('.sound-btn').forEach(function (b) {
+    b.classList.toggle('is-off', SFX.muted);
+    b.setAttribute('aria-label', uiText(SFX.muted ? 'sound-unmute' : 'sound-mute'));
+  });
+}
+document.addEventListener('click', function (e) {
+  const b = e.target.closest && e.target.closest('.sound-btn');
+  if (!b) return;
+  SFX.setMuted(!SFX.muted); SFX.resume(); refreshSoundButtons();
+});
+document.addEventListener('pointerdown', function () { SFX.resume(); }, true);   // browsers start audio after a touch or click
+
+/* Count a number up (the likes on the post). */
+function countUp(el, to, ms) {
+  const t0 = performance.now();
+  (function frame(now) {
+    const k = Math.min(1, (now - t0) / ms), e = 1 - Math.pow(1 - k, 3);
+    el.textContent = Math.round(to * e);
+    if (k < 1 && el.isConnected) requestAnimationFrame(frame);
+  })(t0);
+}
+
+
+/* ===================================================================
+   Screens that need more than their type gives (see the HOOKS comment at the top).
+   =================================================================== */
+const hookTimers = [];
+function hookAfter(ms, fn) { hookTimers.push(setTimeout(fn, ms)); }
+function hookClear() { hookTimers.forEach(clearTimeout); hookTimers.length = 0; SFX.stopAll(); }
+function reducedMotion() { return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
+
+/* party (slide 29): the young people gather (CSS), a flash and a camera click, party music heard from
+   behind a wall, the phone rises and the photo flies into the post, the likes count up to 128. */
+HOOKS['party'] = {
+  enter: function (s) {
+    hookClear();
+    const n = s.querySelector('.likes-n');
+    refreshSoundButtons();
+    if (reducedMotion()) { n.textContent = '128'; hookAfter(300, function () { SFX.play('party'); }); return; }
+    n.textContent = '0';
+    hookAfter(2000, function () { SFX.click(); });
+    hookAfter(2500, function () { SFX.play('party'); });
+    hookAfter(4700, function () { countUp(n, 128, 1300); });
+  },
+  leave: hookClear
+};
+/* finish (slide 32): the drone loops over the festival, with the show far away and the rotors close by. */
+HOOKS['finish'] = {
+  enter: function () {
+    hookClear();
+    refreshSoundButtons();
+    hookAfter(200, function () { SFX.play('show'); SFX.play('drone'); });
+  },
+  leave: hookClear
+};
 
 /* ---------------- Start ---------------- */
 document.addEventListener('DOMContentLoaded', function () {

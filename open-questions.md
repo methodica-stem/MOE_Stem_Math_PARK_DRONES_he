@@ -4,6 +4,24 @@ For the content team (unless it says "designer"). Each has the slide, what the
 storyboard says, and what I built meanwhile. Answers go in `PROGRESS.md` →
 Decisions. None of them stops the build.
 
+## Answered (2026-11-05, by the developer)
+
+1. Arrow after 3 seconds on the first screen.
+2. PLAY after 3 seconds on both videos (still to build).
+3. "(צוחק)" stays out of the captions.
+4. Only the typed range and median are graded in question 1; only the chosen option in question 3.
+5. Alt text for the corrected log: as suggested.
+6. Question 1 scores only when both boxes are right; the lomda sends only the grade (the system decides pass/fail).
+7. Control center: the arrow appears when the applet reaches its final "תוכנית הפריסה אושרה" state (solved, or shown after the second wrong try).
+8. "7." added to question 7's stem.
+9. Math expressions (sums, equations, fractions) show left to right as in English; number lists keep Hebrew order, first number at the right.
+10. Feedback titles and the check button stay as in the storyboard.
+11. Slides 29 and 32 are animations with sound, no PLAY button; slide 29 gets a descriptive alt text (built, see production-notes.md).
+
+Still open: 12–14 (for the designer).
+
+---
+
 ## For the content team
 
 1. **Slide 2 — how many seconds until the blinking arrow?** The note says "after a few seconds". *Built:* 3 seconds.

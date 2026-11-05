@@ -15,7 +15,7 @@ listed where they change what the screen looks like.
   - Second mistake, or a right answer: the feedback of the slide after it.
   - The same retry text is repeated in every question's `.fb-src`.
 - **Scoring (slide 33):** equal weight for all questions (7 × 14.2857 → grade out of 100). A grade of 70 or more is reported to the system as "בוצע בהצלחה", and the report includes the grade. That report is the system's job, not shown to the learner (open question 6).
-- **Animations (not videos):** slides 2, 24, 27, 29, 32 each have a subtle looping or one-off animation; no sound unless the learner asks (house rule: nothing plays on its own — see open question 11 for slide 32's sound).
+- **Animations (not videos):** slides 2, 24, 27, 29, 32 each have a subtle looping or one-off animation. Slides 29 and 32 also have sound (decision 2026-11-05, open question 11): it starts with the screen, stops when the learner leaves, and a round speaker button (bottom left) mutes it. This is a deliberate exception to the house rule "no sound that starts by itself". The sound is drawn in code (Web Audio), so it is a stand-in: real recordings can replace it (put MP3s in `assets/audio` and play them from the hooks in script.js).
 
 ## Per screen
 
@@ -76,7 +76,7 @@ listed where they change what the screen looks like.
 ### 14 · party (slide 29)
 - Animation (not a video): the young people gather for a photo, a flash with a sound like dim party music and a camera click; then a phone rises and the photo becomes a post on an unnamed social network; the likes go up fast.
 - The post's text (name, "לפני 20 דקות", the message, "128") is live HTML in `.post-card`; confirm in phase 2 against the PSD.
-- Sound only on the learner's click (house rule).
+- Built as CSS + a small hook: the young people slide in from both sides and gather; a flash and a camera click; dim party music (drawn in code); the phone rises; the photo flies into the post; the likes count up to 128. Alt text is a hidden description paragraph on the screen ("אנימציה: …"). The kids are the group photo split in two, not separate cut-outs: if they should really walk in one by one, the designer must supply them separately.
 
 ### 15 · q7 (slides 30–31) — single choice
 - Correct: option 2 (the median).

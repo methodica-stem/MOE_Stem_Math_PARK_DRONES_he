@@ -376,6 +376,9 @@
 <!-- ================= SCREEN 14 — ערב ההוקרה: הפוסט (שקף 29) ================= -->
 <section class="screen" data-screen="14" data-sid="party" data-type="explain" tabindex="-1">
   <img class="screen-bg" src="assets/images/party-bg.jpg" alt="">
+  <div class="gather gather-l"></div>
+  <div class="gather gather-r"></div>
+  <p class="sr-only">אנימציה: בני הנוער המתנדבים מתקבצים יחד לתמונה קבוצתית. נשמעים הבזק וצליל של מצלמה, ומוזיקת מסיבה עמומה ברקע. אחר כך עולה טלפון, והתמונה מופיעה בתוך פוסט של ארז ברשת חברתית, ומספר הלייקים עולה במהירות עד 128.</p>
   <div class="narration-banner"><p>ערב ההוקרה היה מ-ד-ה-י-ם, ובני הנוער המתנדבים נהנו מאוד! בזכות העזרה שלכם, הרחפנים שובצו בהצלחה והאירוע התנהל בצורה חלקה ובטוחה.</p></div>
   <div class="phone">
     <img class="phone-screen" src="assets/images/party-phone-screen.png" alt="">
@@ -386,11 +389,13 @@
       <p>איזה ערב היה לנו!!! 🎉</p>
       <p>תודה לכל בני הנוער המתנדבים שמילאו את הפארק בחיוכים ובאנרגיות! ✨</p>
     </div>
+    <div class="snap"></div>
     <img class="post-photo" src="assets/images/party-post.png" alt="">
-    <p class="post-likes">128 ❤️ 👍</p>
+    <p class="post-likes"><span class="likes-n">128</span> <span class="react">❤️ 👍</span></p>
     <img class="phone-body" src="assets/images/party-phone.png" alt="">
   </div>
   <div class="flash"></div>
+  <button class="sound-btn" type="button" aria-label="השתקת הצליל"></button>
   <button class="nav-btn nav-prev" type="button" aria-label="חזרה"></button>
   <button class="nav-btn nav-next hidden" type="button" aria-label="המשך"></button>
 </section>
@@ -446,6 +451,7 @@
 <section class="screen" data-screen="16" data-sid="finish" data-type="finish" tabindex="-1">
   <img class="screen-bg" src="assets/images/finish-bg.jpg" alt="">
   <img class="fx fx-drone" src="assets/images/finish-drone.png" alt="">
+  <p class="sr-only">אנימציה: רחפן מרחף מעל פסטיבל משפחות בפארק, ברקע נשמעים קולות ההופעה והקהל, ומעליהם נשמע קול הרחפן.</p>
   <div class="narration-banner"><p>אחרי שהרחפן מדגם "נץ" הוכיח את עצמו בטיסות המבחן, הוא כבר יצא למשימה הבאה! הפעם הוא מרחף מעל פסטיבל משפחות, ועוזר לשמור על בטיחות המשתתפים.</p></div>
   <button class="help-btn finish-btn" type="button" data-popup="final-grade">סיימתי</button>
   <div class="popup-src popup-final" id="final-grade" data-close-action="finish" hidden>
@@ -453,6 +459,7 @@
     <p>הציון שלך הוא <span data-final-grade>__</span>.</p>
     <p>יש לסגור את המשימה בלחיצה על X.</p>
   </div>
+  <button class="sound-btn" type="button" aria-label="השתקת הצליל"></button>
   <button class="nav-btn nav-prev" type="button" aria-label="חזרה"></button>
 </section>
 
@@ -483,6 +490,8 @@
   <span data-key="close">סגירה</span>
   <span data-key="dnd-picked">נבחר. בחרו מקום ריק והקישו Enter.</span>
   <span data-key="dnd-placed">הוצב במקום.</span>
+  <span data-key="sound-mute">השתקת הצליל</span>
+  <span data-key="sound-unmute">הפעלת הצליל</span>
 </div>
 
 <!-- Video control bar, copied into every .video-wrap by script.js -->
