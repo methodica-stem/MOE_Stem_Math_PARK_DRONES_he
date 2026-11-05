@@ -711,6 +711,7 @@ button, input, select, textarea { font-family: inherit; }
 .screen.active[data-sid="finish"] .fx-drone { animation: droneFloat 5s ease-in-out infinite alternate; }
 @keyframes droneFloat { from { transform: translate(-30px, 8px) rotate(-1deg); } to { transform: translate(30px, -10px) rotate(1deg); } }
 [data-sid="finish"] .finish-btn { left: 283px; top: 855px; width: 187px; height: 115px; padding: 0 0 6px; background-image: url('assets/images/ui-btn-check.png'); background-size: 100% 100%; font-size: 42px; }
-.eq-line { text-align: center; }
+.eq-line { text-align: right; }
+[data-sid="q5"] .eq-line { text-align: center; }
 [data-sid="q6"] .metric-row { display: grid; grid-template-columns: 230px 298px; justify-content: start; }
 [data-sid="q1"] .q-fill { display: grid; grid-template-columns: 440px 298px; justify-content: start; }
