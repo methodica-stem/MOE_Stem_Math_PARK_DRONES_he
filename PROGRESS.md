@@ -3,9 +3,9 @@
 Claude keeps this file up to date. Every session starts by reading it and ends
 by updating it, so work can stop and resume at any point.
 
-**Now:** Phase 1 · screen map and skeleton index.html done (16 screens, contract OK, text 160/161 word for word) — waiting for the developer to review the screen map
-**Waiting on you:** read PROJECT_BRIEF.md (is the screen list right?) and send open-questions.md to the content team (questions 1–11) and the designer (12–14)
-**Waiting on others:** content team: answers to open-questions.md 1–11; designer: 12–14 (not sent yet)
+**Now:** Phases 2–4 first pass · all 16 screens styled to the PSD (panel, pills, help/check/arrow buttons, banners, backgrounds, animations); applets and videos still placeholders — waiting for the developer's visual review and the answers to open-questions.md
+**Waiting on you:** look at the screens (preview, or `index_dev.html` with "compare with design"), then go over open-questions.md together
+**Waiting on others:** designer: 12–14 (not sent); content team: 1–11 (not sent)
 
 ## Inputs
 - Storyboard: `../../סטם_רחפנים_אחרי עריכה לשונית ולאחר הערות פיקוח.pptx` (file date 2026-11-05; "after language edit and after supervision comments"). 33 slides, 7 questions.
@@ -27,9 +27,9 @@ by updating it, so work can stop and resume at any point.
 - [x] 0 · Setup — inputs found, tools installed, project folder created
 - [x] 1 · Storyboard read — screen map (screens.json, PROJECT_BRIEF.md), production-notes.md, open-questions.md
 - [ ] 1 · ✋ Developer reviewed the screen map; open questions sent (date: )
-- [ ] 2 · Design reference — PSD inventory, frames mapped to screens, mockups for the overlay
-- [ ] 3 · ASSET_CHECKLIST.md written
-- [ ] 3 · ✋ Assets exported by the developer and checked (check_assets.py clean)
+- [x] 2 · Design reference — PSD inventory, frames mapped to screens, mockups for the overlay
+- [x] 3 · ASSET_CHECKLIST.md written
+- [x] 3 · Assets exported from the PSD by Claude and checked (check_assets.py: 0 errors, 0 warnings; contact sheet looked at)
 - [ ] 4 · Screens built (tick per batch below)
 - [ ] 5 · Applets built and signed off; videos and audio in
 - [ ] 6 · Self-QA passed (qa_check.py 0 errors, walk-through done)
@@ -59,6 +59,10 @@ by updating it, so work can stop and resume at any point.
 Phase 1 state: text and behaviour are in index.html as a skeleton (learner text word for word, the one miss is the stage direction "(צוחק)", question 3 of open-questions); no styling or positions yet; every background, video, applet and picture is a striped placeholder.
 
 ## Decisions
+- 2026-11-05 · The white question panel is the PSD's (outer box 18,18 to 1902,1062, 4 px black edge, radius 44), not the house 1800×798 panel. House text sizes stay (40/34/46). The progress pills, help button, check button and arrows are the PSD's size and place; the banner is the PSD's translucent card flush top-right. · developer (storyboard/design rule) + Claude
+- 2026-11-05 · At the house text sizes the PSD's question layouts do not fit with a feedback box, so per screen: pictures/applets of Q1, Q2, Q3, Q5 are scaled down (about 0.85 / 0.65 / 0.7 / 0.8) and the feedback box sits in free white space. An automatic overlap test (feedback vs text, pictures, buttons, help button) passes for every question in retry, wrong and correct states; the check button is inside the panel on every question. · Claude
+- 2026-11-05 · Wrong-answer titles stay purple (house rule), the design's older coral title is not used. · Claude
+- 2026-11-05 · All seven question screens share one background (`bg-question.jpg`); the PSD frames are identical there. · Claude
 - 2026-11-05 · Storyboard = source of truth for text and behaviour; design (PSD) = source of truth for looks. · developer
 - 2026-11-05 · Question weights: equal (the storyboard's slide-33 note), written as 14.2857 each so they add up to 100. · Claude, from the storyboard
 - 2026-11-05 · The first screen is an `explain` screen (a blinking arrow after a few seconds, no start button, no back arrow). · Claude
@@ -66,6 +70,11 @@ Phase 1 state: text and behaviour are in index.html as a skeleton (learner text 
 - 2026-11-05 · Videos are placeholders for now (`data-pending-asset`); real files later. · developer
 
 ## Open items
+- Phase 4 batch 1 built, not yet approved by the developer (screens table below stays unticked until he says so).
+- Question 4: the PSD has Lihi at x 560; moved to x 160 so the stem column does not cross her.
+- Videos: posters are exported (video-test-poster, video-typo-poster); no video files yet.
+- control-center: striped applet placeholder over the monitor; the monitor's start card (Hebrew painted in the PSD) comes with the applet in phase 5. `control-center-icons.png` is exported and waits for it.
+- party: animation is CSS (kids zoom in, flash, phone rises); no sound yet (open question 11).
 - Caption times in both videos are placeholders (spread evenly); replace with the SRT when the real videos come.
 - The PLAY delay (3 s) and the control-center completion gate need small build pieces (HOOKs), not engine changes.
 - Q6 needs an endless-stack look for the cards (four copies of each are in the bank).
