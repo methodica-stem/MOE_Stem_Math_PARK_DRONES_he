@@ -725,30 +725,30 @@ button, input, select, textarea { font-family: inherit; }
 
 /* ---- party: gather, flash, phone rises, photo flies into the post, likes ---- */
 .screen[data-sid="party"] { background: #150f26; }
-[data-sid="party"] .gather { position: absolute; inset: 0; background: url('assets/images/party-bg.jpg') center / cover; z-index: 1; pointer-events: none; }
-[data-sid="party"] .gather-l { clip-path: inset(0 50% 0 0); }
-[data-sid="party"] .gather-r { clip-path: inset(0 0 0 50%); }
-.screen.active[data-sid="party"] .gather-l { animation: gatherL 2s cubic-bezier(.2,.7,.3,1) both; }
-.screen.active[data-sid="party"] .gather-r { animation: gatherR 2s cubic-bezier(.2,.7,.3,1) both; }
-.screen.active[data-sid="party"] .screen-bg { animation: showBase 2s step-end both; }
-@keyframes gatherL { from { transform: translateX(-340px); opacity: .15; } to { transform: none; opacity: 1; } }
-@keyframes gatherR { from { transform: translateX(340px); opacity: .15; } to { transform: none; opacity: 1; } }
-@keyframes showBase { from { opacity: 0; } to { opacity: 1; } }
+/* The video (the young people arrive and huddle) plays on entry; when it ends, script.js adds .party-go
+   and the flash, the phone, the photo into the post and the likes follow. */
+[data-sid="party"] .party-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; background: #150f26; }
 [data-sid="party"] .narration-banner { z-index: 7; }
-[data-sid="party"] .phone { z-index: 4; }
+[data-sid="party"] .phone { z-index: 4; opacity: 0; transform: translateY(110%); }
+[data-sid="party"] .flash { opacity: 0; }
 [data-sid="party"] .post-photo { opacity: 0; }
-.screen.active[data-sid="party"] .post-photo { animation: fadeIn .3s linear 4.55s both; }
 [data-sid="party"] .snap { left: 0; top: 0; width: 1920px; height: 1080px; background: url('assets/images/party-bg.jpg') center / cover; opacity: 0; }
-.screen.active[data-sid="party"] .snap { animation: snapIn .95s cubic-bezier(.5,0,.2,1) 3.6s both; }
+[data-sid="party"] .react { display: inline-block; opacity: 0; }
+.screen.active.party-go[data-sid="party"] .flash { animation: flashOnce .4s ease-out both; }
+.screen.active.party-go[data-sid="party"] .phone { animation: phoneRise .9s ease-out .6s both; }
+.screen.active.party-go[data-sid="party"] .snap { animation: snapIn .95s cubic-bezier(.5,0,.2,1) 1.6s both; }
+.screen.active.party-go[data-sid="party"] .post-photo { animation: fadeIn .3s linear 2.55s both; }
+.screen.active.party-go[data-sid="party"] .react { animation: pop .5s ease-out 2.7s both; }
 @keyframes snapIn {
   0% { left: 0; top: 0; width: 1920px; height: 1080px; opacity: 1; }
   99% { left: 1228px; top: 563px; width: 384px; height: 290px; opacity: 1; }
   100% { left: 1228px; top: 563px; width: 384px; height: 290px; opacity: 0; }
 }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-.screen.active[data-sid="party"] .react { display: inline-block; animation: pop .5s ease-out 4.7s both; }
 @keyframes pop { 0% { opacity: 0; transform: scale(.3); } 70% { transform: scale(1.25); } 100% { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) {
-  .screen.active[data-sid="party"] .gather, .screen.active[data-sid="party"] .snap { display: none; }
-  .screen.active[data-sid="party"] .post-photo { animation: none; opacity: 1; }
+  .screen.active[data-sid="party"] .party-video, .screen.active[data-sid="party"] .snap { display: none; }
+  .screen.active[data-sid="party"] .phone { animation: none; opacity: 1; transform: none; }
+  .screen.active[data-sid="party"] .post-photo, .screen.active[data-sid="party"] .react { animation: none; opacity: 1; }
+}
 }

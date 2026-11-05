@@ -1522,15 +1522,25 @@ function reducedMotion() { return window.matchMedia && window.matchMedia('(prefe
 HOOKS['party'] = {
   enter: function (s) {
     hookClear();
-    const n = s.querySelector('.likes-n');
+    const n = s.querySelector('.likes-n'), v = s.querySelector('.party-video');
+    s.classList.remove('party-go');
     refreshSoundButtons();
     if (reducedMotion()) { n.textContent = '128'; hookAfter(300, function () { SFX.play('party'); }); return; }
     n.textContent = '0';
-    hookAfter(2000, function () { SFX.click(); });
-    hookAfter(2500, function () { SFX.play('party'); });
-    hookAfter(4700, function () { countUp(n, 128, 1300); });
+    function go() {                                   // the pose is held: flash, click, music, phone, likes
+      if (s.classList.contains('party-go')) return;
+      s.classList.add('party-go');
+      SFX.click();
+      hookAfter(500, function () { SFX.play('party'); });
+      hookAfter(2700, function () { countUp(n, 128, 1300); });
+    }
+    v.onended = go;
+    try { v.currentTime = 0; } catch (e) {}
+    const p = v.play();
+    if (p && p.catch) p.catch(function () { hookAfter(500, go); });   // the browser refused to play: carry on
+    hookAfter(10000, go);                              // safety: never stay stuck on the video
   },
-  leave: hookClear
+  leave: function (s) { s.classList.remove('party-go'); const v = s.querySelector('.party-video'); if (v) { v.onended = null; v.pause(); } hookClear(); }
 };
 /* finish (slide 32): the drone loops over the festival, with the show far away and the rotors close by. */
 HOOKS['finish'] = {

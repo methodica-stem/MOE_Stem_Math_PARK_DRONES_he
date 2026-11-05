@@ -59,6 +59,7 @@ by updating it, so work can stop and resume at any point.
 Phase 1 state: text and behaviour are in index.html as a skeleton (learner text word for word, the one miss is the stage direction "(צוחק)", question 3 of open-questions); no styling or positions yet; every background, video, applet and picture is a striped placeholder.
 
 ## Decisions
+- 2026-11-05 · Screen 14 (party) opening is the generated clip `assets/videos/party-huddle.mp4` (MiniMax via Hedra, reversed with the ffmpeg bundled in the imageio-ffmpeg Python package). Screens 10 and 12 will get clips the same way later. · developer + Claude
 - 2026-11-05 · Slides 29 and 32 are animations with sound and no PLAY button (open question 11). Sound starts with the screen and has a mute button; an exception to the house no-autoplay-sound rule, decided by the developer. Slide 29 and 32 carry a hidden descriptive text for screen readers. Sounds are synthesized stand-ins. · developer
 - 2026-11-05 · Every math expression shows left to right as in English (sums, equations, fractions), forced with `<span class="eq">`. Because of that two sums are written in the page in the order they show: "140 - 110 = 30" (storyboard text "30 = 110 - 140") and "650 ÷ 5 = 130" ("130 = 5 ÷ 650"). Intentional; the text check reports them. Number lists (inside sentences and the sorted lines in the feedback) keep Hebrew order: first number at the right. · developer (open question 9)
 - 2026-11-05 · Feedback titles stay "צדקת!" / "זו טעות" and the check button stays "צדקתי?", as in the storyboard. · developer (open question 10)
