@@ -74,7 +74,7 @@ listed where they change what the screen looks like.
 - **Continue only after the task is completed inside the applet.** The engine's gate counts seconds after start; it needs a "task completed" message from the applet instead. *To do (phase 5), via a HOOK, not the engine.* What completes the task: open question 7.
 
 ### 14 · party (slide 29)
-- Animation (not a video): the young people gather for a photo, a flash with a sound like dim party music and a camera click; then a phone rises and the photo becomes a post on an unnamed social network; the likes go up fast.
+- Animation (not a video): the young people gather for a photo, a flash with a sound like dim party music and a camera click; then a phone rises and the photo becomes a post on an unnamed social network; the likes go up fast. Built (see below); alt text is a hidden description paragraph.
 - The post's text (name, "לפני 20 דקות", the message, "128") is live HTML in `.post-card`; confirm in phase 2 against the PSD.
 - Built as CSS + a small hook: the young people slide in from both sides and gather; a flash and a camera click; dim party music (drawn in code); the phone rises; the photo flies into the post; the likes count up to 128. Alt text is a hidden description paragraph on the screen ("אנימציה: …"). The kids are the group photo split in two, not separate cut-outs: if they should really walk in one by one, the designer must supply them separately.
 
@@ -84,7 +84,7 @@ listed where they change what the screen looks like.
 - Slide 30 has no "7." in the stem (open question 8).
 
 ### 16 · finish (slides 32–33)
-- Animation (not a video): the drone flies over the park (loop), with the sound of the show in the background and the drone's sound above it. Sound only on the learner's click.
+- Animation (not a video): the drone flies over the park (loop), with the sound of the show in the background and the drone's sound above it. Built as a looped float plus sound drawn in code (crowd and show far away, rotors close), with a mute button and a hidden description paragraph for screen readers.
 - "סיימתי" opens the final popup: **"כל הכבוד, המשימה הושלמה! / הציון שלך הוא __. / יש לסגור את המשימה בלחיצה על X."** The grade fills the blank; closing it with X ends the lomda and sends the score.
 
 ## Applets from the content team — check list (phase 5)
