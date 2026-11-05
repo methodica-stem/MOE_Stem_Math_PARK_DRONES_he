@@ -1465,7 +1465,7 @@ const SFX = (function () {
       } else if (name === 'drone') {                      // rotors: a buzz with a fast flutter, drifting left and right
         const out = ctx.createGain(), lp = ctx.createBiquadFilter(), flutter = ctx.createGain(), lfo = ctx.createOscillator(), lfoDepth = ctx.createGain();
         lp.type = 'lowpass'; lp.frequency.value = 900;
-        out.gain.setValueAtTime(0.0001, ctx.currentTime); out.gain.linearRampToValueAtTime(0.022, ctx.currentTime + 1.5);
+        out.gain.setValueAtTime(0.0001, ctx.currentTime); out.gain.linearRampToValueAtTime(0.011, ctx.currentTime + 1.5);
         flutter.gain.value = 0.7; lfo.frequency.value = 26; lfoDepth.gain.value = 0.3;
         lfo.connect(lfoDepth); lfoDepth.connect(flutter.gain); lfo.start(); keep(lfo);
         [168, 171, 84].forEach(function (f) { const o = ctx.createOscillator(); o.type = 'sawtooth'; o.frequency.value = f; o.connect(lp); o.start(); keep(o); });

@@ -78,6 +78,8 @@ listed where they change what the screen looks like.
 - The post's text (name, "לפני 20 דקות", the message, "128") is live HTML in `.post-card`; confirm in phase 2 against the PSD.
 - Built as CSS + a small hook: the young people slide in from both sides and gather; a flash and a camera click; dim party music (drawn in code); the phone rises; the photo flies into the post; the likes count up to 128. Alt text is a hidden description paragraph on the screen ("אנימציה: …"). The kids are the group photo split in two, not separate cut-outs: if they should really walk in one by one, the designer must supply them separately.
 
+**Open (party): real "huddle" animation.** The developer wants the young people animated as they squeeze together for the photo; the current version only slides two halves of the photo together. A flat photo cannot give that in code. Plan: a short clip made in Flow from the photo (`assets/images/party-bg.jpg`, the exact end frame), 16:9, 1920×1080, 3–5 s, no audio (the click and the music are drawn in code), ending on the same group pose. It replaces the first 2 s (`.gather` layers) and the flash follows its last frame. Until it arrives the split-photo version stays.
+
 ### 15 · q7 (slides 30–31) — single choice
 - Correct: option 2 (the median).
 - Feedback has "💡נקודה למחשבה" with two words highlighted (רוב הטיסות, החציון). Design note on slide 31: "עיצוב משוב" — the feedback box is bigger.
