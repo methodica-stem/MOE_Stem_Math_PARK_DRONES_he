@@ -696,8 +696,6 @@ button, input, select, textarea { font-family: inherit; }
 [data-sid="party"] .post-photo { left: 1228px; top: 563px; width: 384px; height: 290px; }
 [data-sid="party"] .post-likes { right: 332px; top: 872px; font-size: 28px; font-weight: 600; color: #1A1A1A; }
 [data-sid="party"] .flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; z-index: 8; }
-.screen.active[data-sid="party"] .flash { animation: flashOnce .4s ease-out 2.4s both; }
-.screen.active[data-sid="party"] .phone { animation: phoneRise .9s ease-out 3s both; }
 @keyframes flashOnce { 0% { opacity: 0; } 25% { opacity: .85; } 100% { opacity: 0; } }
 @keyframes phoneRise { from { transform: translateY(110%); opacity: 0; } to { transform: none; opacity: 1; } }
 /* ---- 15 · q7 ---- */

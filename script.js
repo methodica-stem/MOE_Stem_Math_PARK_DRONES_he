@@ -1468,25 +1468,25 @@ const SFX = (function () {
     get muted() { return muted; },
     resume: function () { if (ctx && ctx.state === 'suspended') ctx.resume().catch(function () {}); },
     setMuted: function (m) { muted = !!m; if (master) master.gain.setTargetAtTime(muted ? 0 : 1, ctx.currentTime, 0.05); },
-    arrival: function () {                                // the 6.4 s before the flash: the young people run in and huddle
+    arrival: function () {                                // the 3.3 s before the flash: the young people run in close and huddle
       if (!ensure()) return;
       const t0 = ctx.currentTime + 0.05, out = ctx.createGain();
       out.gain.value = 1; out.connect(master); keep(out);
       const crowd = ctx.createBufferSource(), cf = ctx.createBiquadFilter(), cg = ctx.createGain();   // a crowd murmur that swells
       crowd.buffer = noiseBuffer(2); crowd.loop = true;
       cf.type = 'bandpass'; cf.frequency.value = 600; cf.Q.value = 0.5;
-      cg.gain.setValueAtTime(0.0001, t0); cg.gain.linearRampToValueAtTime(0.09, t0 + 1.2); cg.gain.linearRampToValueAtTime(0.14, t0 + 5.5);
+      cg.gain.setValueAtTime(0.0001, t0); cg.gain.linearRampToValueAtTime(0.1, t0 + 0.5); cg.gain.linearRampToValueAtTime(0.14, t0 + 3);
       crowd.connect(cf); cf.connect(cg); cg.connect(out); crowd.start(t0); keep(crowd); keep(cg);
       beat(bus(0.08, 1200, 1.5), 118, true);              // the show, far away
       for (let lane = 0; lane < 4; lane++) {              // running feet from the sides and from the stage: louder as they near
-        let t = 0.5 + lane * 0.11, side = [-0.8, 0.8, -0.3, 0.3][lane];
-        while (t < 5.6) {
-          const p = (t - 0.5) / 5.1, vol = 0.03 + 0.2 * Math.sin(Math.PI * Math.min(1, p * 1.15));
+        let t = 0.02 + lane * 0.09, side = [-0.8, 0.8, -0.3, 0.3][lane];
+        while (t < 2.5) {
+          const p = t / 2.5, vol = 0.1 + 0.16 * Math.sin(Math.PI * Math.min(1, p * 0.8));
           footstep(out, t0 + t, vol, side + (Math.random() - 0.5) * 0.3);
           t += 0.3 + 0.12 * Math.random();
         }
       }
-      for (let k = 0; k < 8; k++) giggle(out, t0 + 3.7 + Math.random() * 2.1, 330 + Math.random() * 120, (Math.random() - 0.5) * 1.4);   // laughing as they squeeze in
+      for (let k = 0; k < 8; k++) giggle(out, t0 + 0.7 + Math.random() * 2.1, 330 + Math.random() * 120, (Math.random() - 0.5) * 1.4);   // laughing as they squeeze in
     },
     whoosh: function () {                                 // the phone rising
       if (!ensure()) return;
@@ -1582,7 +1582,7 @@ HOOKS['party'] = {
     refreshSoundButtons();
     if (reducedMotion()) { n.textContent = '128'; hookAfter(300, function () { SFX.play('party'); }); return; }
     n.textContent = '0';
-    const FLASH_AT = 6.5;                              // seconds into the clip: the pose has settled
+    const FLASH_AT = 3.3;                              // seconds into the clip: they have huddled, posed and held still for a second
     let poll = null, started = false;
     function go() {                                    // freeze, flash, click, music, phone, likes
       if (s.classList.contains('party-go')) return;
