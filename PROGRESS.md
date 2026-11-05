@@ -3,9 +3,9 @@
 Claude keeps this file up to date. Every session starts by reading it and ends
 by updating it, so work can stop and resume at any point.
 
-**Now:** Phase 0 · setup done, version check done — waiting for the developer to confirm folder, inputs and the version-check result
-**Waiting on you:** confirm the setup (see the message in chat), and say whether the design/storyboard differences below are OK to go on with
-**Waiting on others:** nothing yet
+**Now:** Phase 1 · screen map and skeleton index.html done (16 screens, contract OK, text 160/161 word for word) — waiting for the developer to review the screen map
+**Waiting on you:** read PROJECT_BRIEF.md (is the screen list right?) and send open-questions.md to the content team (questions 1–11) and the designer (12–14)
+**Waiting on others:** content team: answers to open-questions.md 1–11; designer: 12–14 (not sent yet)
 
 ## Inputs
 - Storyboard: `../../סטם_רחפנים_אחרי עריכה לשונית ולאחר הערות פיקוח.pptx` (file date 2026-11-05; "after language edit and after supervision comments"). 33 slides, 7 questions.
@@ -25,7 +25,7 @@ by updating it, so work can stop and resume at any point.
 
 ## Phases
 - [x] 0 · Setup — inputs found, tools installed, project folder created
-- [ ] 1 · Storyboard read — screen map (screens.json, PROJECT_BRIEF.md), production-notes.md, open-questions.md
+- [x] 1 · Storyboard read — screen map (screens.json, PROJECT_BRIEF.md), production-notes.md, open-questions.md
 - [ ] 1 · ✋ Developer reviewed the screen map; open questions sent (date: )
 - [ ] 2 · Design reference — PSD inventory, frames mapped to screens, mockups for the overlay
 - [ ] 3 · ASSET_CHECKLIST.md written
@@ -40,13 +40,35 @@ by updating it, so work can stop and resume at any point.
 | # | sid | built | matches design | approved by developer |
 |---|---|---|---|---|
 | 1 | intro | ☐ | ☐ | ☐ |
+| 2 | video-test | ☐ | ☐ | ☐ |
+| 3 | q1 | ☐ | ☐ | ☐ |
+| 4 | video-typo | ☐ | ☐ | ☐ |
+| 5 | q2 | ☐ | ☐ | ☐ |
+| 6 | q3 | ☐ | ☐ | ☐ |
+| 7 | next-test | ☐ | ☐ | ☐ |
+| 8 | q4 | ☐ | ☐ | ☐ |
+| 9 | q5 | ☐ | ☐ | ☐ |
+| 10 | test-six | ☐ | ☐ | ☐ |
+| 11 | q6 | ☐ | ☐ | ☐ |
+| 12 | park-lights | ☐ | ☐ | ☐ |
+| 13 | control-center | ☐ | ☐ | ☐ |
+| 14 | party | ☐ | ☐ | ☐ |
+| 15 | q7 | ☐ | ☐ | ☐ |
+| 16 | finish | ☐ | ☐ | ☐ |
 
-(The demo screen list above is the starter's; the real list comes in Phase 1.)
+Phase 1 state: text and behaviour are in index.html as a skeleton (learner text word for word, the one miss is the stage direction "(צוחק)", question 3 of open-questions); no styling or positions yet; every background, video, applet and picture is a striped placeholder.
 
 ## Decisions
+- 2026-11-05 · Storyboard = source of truth for text and behaviour; design (PSD) = source of truth for looks. · developer
+- 2026-11-05 · Question weights: equal (the storyboard's slide-33 note), written as 14.2857 each so they add up to 100. · Claude, from the storyboard
+- 2026-11-05 · The first screen is an `explain` screen (a blinking arrow after a few seconds, no start button, no back arrow). · Claude
+- 2026-11-05 · Question stems follow the storyboard ("N." inside the text), not the design's "שאלה N:" heading. Check button reads "צדקתי?" and the wrong title "זו טעות", as the storyboard has them. · Claude (open questions 8, 10)
 - 2026-11-05 · Videos are placeholders for now (`data-pending-asset`); real files later. · developer
 
 ## Open items
+- Caption times in both videos are placeholders (spread evenly); replace with the SRT when the real videos come.
+- The PLAY delay (3 s) and the control-center completion gate need small build pieces (HOOKs), not engine changes.
+- Q6 needs an endless-stack look for the cards (four copies of each are in the bank).
 - The three HTML applets in `../../יישומונים/` must be checked in Phase 5 (self-contained? gating? which screens).
 
 ## Delivery log

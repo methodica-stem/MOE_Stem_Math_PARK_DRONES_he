@@ -20,7 +20,7 @@
    export finds every string in one place.
    =================================================================== */
 
-const TOTAL_SCREENS = 9;              // must equal the number of <section class="screen">
+const TOTAL_SCREENS = 16;              // must equal the number of <section class="screen">
 window.TOTAL_SCREENS = TOTAL_SCREENS;
 let currentScreen = 1;
 

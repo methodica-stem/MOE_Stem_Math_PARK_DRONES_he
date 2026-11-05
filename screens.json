@@ -8,7 +8,9 @@
     "storyboard_date": "2026-11-05",
     "psd": "stem_drones.psd",
     "comps": "transfer-01a1a149/drones_03.11.26_v2.pptx",
-    "not_screens": [],
+    "not_screens": [
+      1
+    ],
     "psd_frames_unused": [],
     "text_check_skip_slides": []
   },
@@ -16,101 +18,199 @@
     {
       "n": 1,
       "sid": "intro",
-      "type": "opening",
-      "title": "פתיחה",
+      "type": "explain",
+      "title": "פתיחה — ערב הוקרה בפארק",
       "slides": [
         2
-      ]
+      ],
+      "psd": "#17 (frame 2)"
     },
     {
       "n": 2,
-      "sid": "video-intro",
+      "sid": "video-test",
       "type": "video",
-      "title": "סרטון פתיחה",
+      "title": "סרטון — טיסות מבחן",
       "slides": [
         3,
         4,
-        5
-      ]
+        5,
+        6,
+        7,
+        8
+      ],
+      "psd": "#16 (frame 3)"
     },
     {
       "n": 3,
-      "sid": "hypotheses",
-      "type": "tiles",
-      "title": "השערות — לחיצה על דמויות",
-      "slides": [
-        6,
-        7,
-        8,
-        9,
-        10
-      ]
-    },
-    {
-      "n": 4,
-      "sid": "explain-model",
-      "type": "explain",
-      "title": "הסבר עם מונח ותרשים",
-      "slides": [
-        11
-      ]
-    },
-    {
-      "n": 5,
       "sid": "q1",
       "type": "question",
-      "title": "שאלה 1 — בחירה יחידה",
+      "title": "שאלה 1 — טווח וחציון (מיון והקלדה)",
       "slides": [
-        12,
-        13
+        9,
+        10
       ],
-      "kind": "single",
-      "weight": 10,
+      "psd": "#15 (frame 9)",
+      "kind": "input",
+      "weight": 1,
       "step": 1
     },
     {
-      "n": 6,
+      "n": 4,
+      "sid": "video-typo",
+      "type": "video",
+      "title": "סרטון — טעות בהקלדה",
+      "slides": [
+        11,
+        12,
+        13,
+        14
+      ],
+      "psd": "#14 (frame 11)"
+    },
+    {
+      "n": 5,
       "sid": "q2",
       "type": "question",
-      "title": "שאלה 2 — בחירה מרובה",
+      "title": "שאלה 2 — האם סדר הנתונים השתנה",
       "slides": [
-        14,
-        15
+        15,
+        16
       ],
-      "kind": "multi",
-      "weight": 10,
+      "psd": "#13 (frame 15)",
+      "kind": "single",
+      "weight": 1,
       "step": 2
     },
     {
-      "n": 7,
-      "sid": "demo-sim",
-      "type": "applet",
-      "title": "ישומון",
-      "slides": [
-        16
-      ]
-    },
-    {
-      "n": 8,
+      "n": 6,
       "sid": "q3",
       "type": "question",
-      "title": "שאלה 3 — גרירת מילים",
+      "title": "שאלה 3 — ממוצע וחציון שווים",
       "slides": [
         17,
         18
       ],
-      "kind": "dnd",
-      "weight": 10,
+      "psd": "#12 (frame 17)",
+      "kind": "single",
+      "weight": 1,
       "step": 3
     },
     {
-      "n": 9,
-      "sid": "finish",
-      "type": "finish",
-      "title": "סיום",
+      "n": 7,
+      "sid": "next-test",
+      "type": "explain",
+      "title": "טיסת מבחן נוספת",
       "slides": [
         19
-      ]
+      ],
+      "psd": "#11 (frame 19)"
+    },
+    {
+      "n": 8,
+      "sid": "q4",
+      "type": "question",
+      "title": "שאלה 4 — הוספת נתון השווה לממוצע",
+      "slides": [
+        20,
+        21
+      ],
+      "psd": "#10 (frame 20)",
+      "kind": "single",
+      "weight": 1,
+      "step": 4
+    },
+    {
+      "n": 9,
+      "sid": "q5",
+      "type": "question",
+      "title": "שאלה 5 — חישוב הנתון החסר",
+      "slides": [
+        22,
+        23
+      ],
+      "psd": "#9 (frame 22)",
+      "kind": "input",
+      "weight": 1,
+      "step": 5
+    },
+    {
+      "n": 10,
+      "sid": "test-six",
+      "type": "explain",
+      "title": "תוצאת טיסת המבחן השישית",
+      "slides": [
+        24
+      ],
+      "psd": "#8 (frame 24)"
+    },
+    {
+      "n": 11,
+      "sid": "q6",
+      "type": "question",
+      "title": "שאלה 6 — השפעת טיסה שביעית על המדדים",
+      "slides": [
+        25,
+        26
+      ],
+      "psd": "#7 (frame 25)",
+      "kind": "dnd",
+      "weight": 1,
+      "step": 6
+    },
+    {
+      "n": 12,
+      "sid": "park-lights",
+      "type": "explain",
+      "title": "הרחפן שובץ — מתחמי הפארק",
+      "slides": [
+        27
+      ],
+      "psd": "#6 (frame 27)"
+    },
+    {
+      "n": 13,
+      "sid": "control-center",
+      "type": "applet",
+      "title": "מרכז הבקרה",
+      "slides": [
+        28
+      ],
+      "psd": "#5 (frame 28)"
+    },
+    {
+      "n": 14,
+      "sid": "party",
+      "type": "explain",
+      "title": "ערב ההוקרה — הפוסט",
+      "slides": [
+        29
+      ],
+      "psd": "#4 (frame 29)"
+    },
+    {
+      "n": 15,
+      "sid": "q7",
+      "type": "question",
+      "title": "שאלה 7 — דרישת מנהל הפארק",
+      "slides": [
+        30,
+        31
+      ],
+      "psd": "#3 (frame 31)",
+      "kind": "single",
+      "weight": 1,
+      "step": 7
+    },
+    {
+      "n": 16,
+      "sid": "finish",
+      "type": "finish",
+      "title": "סיום — פסטיבל משפחות",
+      "slides": [
+        32,
+        33
+      ],
+      "psd": "#2 (frame 32)"
     }
   ]
 }

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>שם הלומדה</title>
+<title>רחפנים בשירות הפארק</title>
 <link rel="icon" href="data:,">
 <link rel="stylesheet" href="styles.css">
 <!-- Images used only as CSS backgrounds (buttons, panels) are not fetched
@@ -23,28 +23,29 @@
      Banner comment per screen: number, title, storyboard slides.
      =================================================================== -->
 
-<!-- ================= SCREEN 1 — פתיחה (שקף 2) ================= -->
-<section class="screen active" data-screen="1" data-sid="intro" data-type="opening" tabindex="-1">
-  <div class="screen-bg bg-placeholder"></div>
-  <!-- <img class="screen-bg" src="assets/images/intro-bg.jpg" alt=""> -->
-  <div class="intro-card">
-    <h1 class="intro-title">שם הלומדה</h1>
-    <p class="intro-subtitle">שאלת החקר של הלומדה</p>
-  </div>
-  <button class="btn-primary intro-start" type="button" data-action="next">מתחילים</button>
+<!-- ================= SCREEN 1 — פתיחה: ערב הוקרה בפארק (שקף 2) ================= -->
+<section class="screen active" data-screen="1" data-sid="intro" data-type="explain" data-arrow-delay="3" tabindex="-1">
+  <div class="screen-bg" data-pending-asset="background, PSD #17 (frame 2) — lights animate (slide 2 note)"></div>
+  <div class="narration-banner"><p>בעוד 24 שעות ייערך בפארק "האורות" ערב הוקרה לנוער המתנדב של העיר! אלפי בני נוער צפויים להגיע, וצוות הבקרה של הפארק ערוך להפעיל רחפנים כדי לזהות אזורים עמוסים ולעזור לצוותי הביטחון במהלך האירוע.</p></div>
+  <button class="nav-btn nav-next hidden" type="button" aria-label="המשך"></button>
 </section>
 
-<!-- ================= SCREEN 2 — סרטון פתיחה (שקפים 3-5) ================= -->
-<section class="screen" data-screen="2" data-sid="video-intro" data-type="video" tabindex="-1">
-  <div class="narration-banner"><p>שורת קריינות שמופיעה מעל הסרטון.</p></div>
+<!-- ================= SCREEN 2 — סרטון: טיסות מבחן (שקפים 3-8) ================= -->
+<section class="screen" data-screen="2" data-sid="video-test" data-type="video" tabindex="-1">
+  <div class="narration-banner"><p>לקראת פתיחת האירוע, ארז, מפיק האירוע, וליהי, קצינת הביטחון, בודקים כל רחפן בנפרד באמצעות סדרת טיסות מבחן. אחר כך הם ישוו בין הרחפנים, כדי להתאים לכל מתחם בפארק את הרחפן המתאים לגודלו.</p></div>
   <div class="video-wrap">
-    <!-- data-pending-asset = no video file yet; remove it and add
-         <source src="assets/videos/video-intro.mp4#t=0.001" type="video/mp4"> -->
     <video class="video-el" playsinline preload="metadata" disablepictureinpicture controlslist="nodownload noremoteplayback nofullscreen noplaybackrate" data-pending-asset></video>
-    <div class="vcap-src" data-clear-after="9.5" hidden>
-      <span data-t="0.4">שורת כתובית ראשונה.</span>
-      <span data-t="3.2">שורת כתובית שנייה.</span>
-      <span data-t="6.1">שורת כתובית שלישית.</span>
+    <!-- Caption times are placeholders (spread evenly) until the real video and its SRT arrive. -->
+    <div class="vcap-src" data-clear-after="40" hidden>
+      <span data-t="0.5">תגידי, מה הסיכוי שהשנה נעבור את האירוע בלי מיליון בדיקות לכל רחפן?</span>
+      <span data-t="6">בערך כמו הסיכוי שנצא להפסקת קפה בזמן האירוע...</span>
+      <span data-t="11">הבנתי...</span>
+      <span data-t="14">אז בואי נתחיל מהראשון.</span>
+      <span data-t="17">מה אנחנו יודעים על הרחפן מדגם "נץ"?</span>
+      <span data-t="22">הוצאנו אותו לחמש טיסות מבחן.</span>
+      <span data-t="26">בכל טיסה בדקנו כמה תמונות הוא הספיק לצלם בזמן הרחיפה שלו - בערך אותו זמן שיידרש ממנו באירוע.</span>
+      <span data-t="33">מעולה!</span>
+      <span data-t="35">נתחיל לנתח את הנתונים, ובהמשך נשווה אותם לשאר הרחפנים כדי להבין איפה כדאי לשבץ כל אחד.</span>
     </div>
     <div class="video-caption hidden"><p></p></div>
     <button class="play-btn-big" type="button" aria-label="הפעלת הסרטון"></button>
@@ -53,141 +54,366 @@
   <button class="nav-btn nav-next hidden" type="button" aria-label="המשך"></button>
 </section>
 
-<!-- ================= SCREEN 3 — השערות: לחיצה על דמויות (שקפים 6-10) ================= -->
-<section class="screen" data-screen="3" data-sid="hypotheses" data-type="tiles" tabindex="-1">
-  <div class="screen-bg bg-placeholder"></div>
-  <div class="narration-banner"><p>לחצו על כל אחת מהדמויות וגלו מה ההשערה שלה.</p></div>
-  <div class="tiles-board empty" aria-live="polite"></div>
-  <div class="tiles" data-mode="grayscale-once">
-    <div class="tile" data-tile-id="char1" role="button" tabindex="0" aria-label="לחצו לשמיעת ההשערה של דמות 1">
-      <span class="tile-face">1</span><span class="tile-check" aria-hidden="true">✓</span>
-      <div class="tile-content" hidden><strong>דמות 1:</strong> "ההשערה של הדמות הראשונה."</div>
-    </div>
-    <div class="tile" data-tile-id="char2" role="button" tabindex="0" aria-label="לחצו לשמיעת ההשערה של דמות 2">
-      <span class="tile-face">2</span><span class="tile-check" aria-hidden="true">✓</span>
-      <div class="tile-content" hidden><strong>דמות 2:</strong> "ההשערה של הדמות השנייה."</div>
-    </div>
-    <div class="tile" data-tile-id="char3" role="button" tabindex="0" aria-label="לחצו לשמיעת ההשערה של דמות 3">
-      <span class="tile-face">3</span><span class="tile-check" aria-hidden="true">✓</span>
-      <div class="tile-content" hidden><strong>דמות 3:</strong> "ההשערה של הדמות השלישית."</div>
-    </div>
-  </div>
-  <button class="nav-btn nav-prev" type="button" aria-label="חזרה"></button>
-  <button class="nav-btn nav-next hidden" type="button" aria-label="המשך"></button>
-</section>
-
-<!-- ================= SCREEN 4 — הסבר עם מונח ותרשים (שקף 11) ================= -->
-<section class="screen" data-screen="4" data-sid="explain-model" data-type="explain" data-arrow-delay="2" tabindex="-1">
-  <div class="screen-bg bg-placeholder"></div>
-  <div class="text-panel">
-    <p>משפט הסבר שבו מופיע <button class="term" type="button" aria-describedby="tip-model">מונח חדש</button> שהלומדים עוד לא מכירים.</p>
-    <p>וכך נראה שבר בתוך הטקסט: <span class="frac"><span>3</span><span>4</span></span> מהשטח.</p>
-  </div>
-  <span class="term-tip" role="tooltip" id="tip-model">ההגדרה של המונח מופיעה כאן.</span>
-  <figure class="figure-frame" data-reopen-content>
-    <img src="assets/images/demo-chart.svg" alt="תרשים עמודות לדוגמה: חמש עמודות שגובהן עולה משמאל לימין.">
-    <button class="zoom-btn" type="button" data-zoom-src="assets/images/demo-chart.svg" data-zoom-alt="תרשים עמודות לדוגמה: חמש עמודות שגובהן עולה משמאל לימין." aria-label="הגדלת התרשים"></button>
-  </figure>
-  <button class="nav-btn nav-prev" type="button" aria-label="חזרה"></button>
-  <button class="nav-btn nav-next hidden" type="button" aria-label="המשך"></button>
-</section>
-
-<!-- ================= SCREEN 5 — שאלה 1: בחירה יחידה (שקפים 12-13) ================= -->
-<section class="screen" data-screen="5" data-sid="q1" data-type="question" data-kind="single" data-weight="10" data-step="1" tabindex="-1">
-  <div class="screen-bg bg-placeholder"></div>
+<!-- ================= SCREEN 3 — שאלה 1: טווח וחציון, מיון והקלדה (שקפים 9-10) ================= -->
+<section class="screen" data-screen="3" data-sid="q1" data-type="question" data-kind="input" data-weight="14.2857" data-step="1" tabindex="-1">
+  <div class="screen-bg" data-pending-asset="background, PSD #15 (frame 9), without the white question panel"></div>
   <div class="q-overlay"></div>
-  <button class="reopen-btn" type="button" data-reopen="explain-model">לצפייה בתרשים</button>
+  <button class="help-btn" type="button" data-popup="help-q1">עזרה</button>
+  <div class="popup-src" id="help-q1" hidden>
+    <p>לחישוב הטווח, חסרו את הנתון הקטן ביותר מהנתון הגדול ביותר, ואז חפשו את המספר שנמצא בדיוק באמצע, לקבלת החציון.</p>
+  </div>
   <div class="q-card">
-    <h2 class="q-title">שאלה 1</h2>
-    <p class="q-body"><strong>נוסח השאלה מופיע כאן?</strong></p>
-    <p class="q-instruction">סמנו את התשובה הנכונה.</p>
+    <div class="applet-frame q-applet" data-pending-asset="applet: מיון צילומי רחפנים — שאלה 1 (slide 9, elements are dragged)"></div>
+    <p class="q-body">1. ליהי וארז רוצים לחשב את החציון ואת הטווח של התמונות, כדי להבין מהן היכולות של הרחפן מדגם "נץ".</p>
+    <p class="q-body">ביומן הטיסות מופיע מספר התמונות שהוא צילם בכל טיסה.</p>
+    <p class="q-instruction">גררו את הנתונים מהקטן לגדול, והקלידו את הטווח ואת החציון.</p>
+    <p class="q-fill">הטווח של מספר התמונות: <span class="q-input" data-answer="30" data-match="value"><input class="q-in" inputmode="numeric" aria-label="הטווח של מספר התמונות"></span></p>
+    <p class="q-fill">החציון של מספר התמונות: <span class="q-input" data-answer="125" data-match="value"><input class="q-in" inputmode="numeric" aria-label="החציון של מספר התמונות"></span></p>
+  </div>
+  <button class="btn-check" type="button" disabled>צדקתי?</button>
+  <div class="fb-src" hidden>
+    <div data-fb="retry"><p class="fb-t">זו אינה התשובה, נסו שוב.</p><p>תוכלו ללחוץ על כפתור העזרה כדי לקבל רמז.</p></div>
+    <div data-fb="correct"><p class="fb-t">צדקת!</p>
+      <p>אחרי שנסדר את הנתונים מהקטן לגדול, נקבל את הסדרה:</p>
+      <p>110, 120, 125, 130, 140.</p>
+      <p>הטווח הוא ההפרש בין הנתון הגדול ביותר לנתון הקטן ביותר.</p>
+      <p>לכן: 30 = 110 - 140</p>
+      <p>החציון הוא הנתון שנמצא בדיוק באמצע הסדרה, ולכן הוא: 125.</p></div>
+    <div data-fb="wrong2"><p class="fb-t">זו טעות</p>
+      <p>אחרי שנסדר את הנתונים מהקטן לגדול, נקבל את הסדרה:</p>
+      <p>110, 120, 125, 130, 140.</p>
+      <p>הטווח הוא ההפרש בין הנתון הגדול ביותר לנתון הקטן ביותר.</p>
+      <p>לכן: 30 = 110 - 140</p>
+      <p>החציון הוא הנתון שנמצא בדיוק באמצע הסדרה, ולכן הוא: 125.</p></div>
+  </div>
+  <button class="nav-btn nav-prev" type="button" aria-label="חזרה"></button>
+  <button class="nav-btn nav-next hidden" type="button" aria-label="המשך"></button>
+</section>
+
+<!-- ================= SCREEN 4 — סרטון: טעות בהקלדה (שקפים 11-14) ================= -->
+<section class="screen" data-screen="4" data-sid="video-typo" data-type="video" tabindex="-1">
+  <div class="video-wrap">
+    <video class="video-el" playsinline preload="metadata" disablepictureinpicture controlslist="nodownload noremoteplayback nofullscreen noplaybackrate" data-pending-asset></video>
+    <!-- Caption times are placeholders (spread evenly) until the real video and its SRT arrive. -->
+    <div class="vcap-src" data-clear-after="24" hidden>
+      <span data-t="0.5">אופס...</span>
+      <span data-t="3.5">מה קרה?</span>
+      <span data-t="6.5">עברתי שוב על היומן של טיסות המבחן וגיליתי טעות בהקלדה!</span>
+      <span data-t="12">בטיסה אחת נרשמו 120 תמונות, אבל בפועל הרחפן צילם 145 תמונות...</span>
+      <span data-t="18">זה דווקא נתון משמח, אבל כדי לקבל החלטות נכונות חייבים לעבוד עם נתונים מדויקים.</span>
+    </div>
+    <div class="video-caption hidden"><p></p></div>
+    <button class="play-btn-big" type="button" aria-label="הפעלת הסרטון"></button>
+  </div>
+  <button class="nav-btn nav-prev" type="button" aria-label="חזרה"></button>
+  <button class="nav-btn nav-next hidden" type="button" aria-label="המשך"></button>
+</section>
+
+<!-- ================= SCREEN 5 — שאלה 2: האם סדר הנתונים השתנה (שקפים 15-16) ================= -->
+<section class="screen" data-screen="5" data-sid="q2" data-type="question" data-kind="single" data-weight="14.2857" data-step="2" tabindex="-1">
+  <div class="screen-bg" data-pending-asset="background, PSD #13 (frame 15), without the white question panel"></div>
+  <div class="q-overlay"></div>
+  <button class="help-btn" type="button" data-popup="help-q2">עזרה</button>
+  <div class="popup-src" id="help-q2" hidden>
+    <p>האם החלפת 120 ב-145 משנה את סדר הנתונים?</p>
+  </div>
+  <div class="q-card">
+    <div class="figure-frame q-figure" data-pending-asset="picture: the flight log with 120 crossed out and 145 (slide 15) — needs alt text"></div>
+    <p class="q-body">2. אחרי שהטעות תוקנה, ליהי וארז הגיעו להשערה:</p>
+    <p class="q-body">"תיקון מספר התמונות מ-120 ל-145 אמנם הגדיל את ממוצע התמונות שהרחפן צילם, אבל הוא כנראה לא השפיע על החציון, כי זה בסך הכול שינוי של נתון אחד מתוך חמישה".</p>
+    <p class="q-instruction">איזו מהטענות הבאות היא הנכונה ביותר?</p>
     <div class="q-answers" role="radiogroup" aria-label="אפשרויות תשובה">
-      <div class="q-opt" data-id="1" role="radio" tabindex="0" aria-checked="false"><span class="q-mark"></span>תשובה ראשונה.</div>
-      <div class="q-opt" data-id="2" data-correct role="radio" tabindex="0" aria-checked="false"><span class="q-mark"></span>תשובה שנייה (הנכונה).</div>
-      <div class="q-opt" data-id="3" role="radio" tabindex="0" aria-checked="false"><span class="q-mark"></span>תשובה שלישית.</div>
-      <div class="q-opt" data-id="4" role="radio" tabindex="0" aria-checked="false"><span class="q-mark"></span>תשובה רביעית.</div>
+      <div class="q-opt" data-id="1" role="radio" tabindex="0" aria-checked="false"><span class="q-mark"></span>הם צודקים - מספר הטיסות אי-זוגי (5), ולכן הנתון האמצעי נשאר באותו מיקום.</div>
+      <div class="q-opt" data-id="2" role="radio" tabindex="0" aria-checked="false"><span class="q-mark"></span>הם טועים - שינוי של נתון אחד תמיד משנה את החציון.</div>
+      <div class="q-opt" data-id="3" data-correct role="radio" tabindex="0" aria-checked="false"><span class="q-mark"></span>הם טועים – התיקון ל-145 שינה את סדר הנתונים, ולכן החציון השתנה מ-125 ל-130.</div>
+      <div class="q-opt" data-id="4" role="radio" tabindex="0" aria-checked="false"><span class="q-mark"></span>הם צודקים - גם 120 וגם 145 גדולים מ-110, ולכן סדר הנתונים לא השתנה.</div>
     </div>
   </div>
-  <button class="btn-check" type="button" disabled>האם צדקתי?</button>
+  <button class="btn-check" type="button" disabled>צדקתי?</button>
   <div class="fb-src" hidden>
-    <div data-fb="retry"><p class="fb-t">זו אינה התשובה.</p><p>רמז שמכוון את הלומדים בחזרה לתרשים.</p></div>
-    <div data-fb="correct"><p class="fb-t">צדקת!</p><p>הסבר שמופיע אחרי תשובה נכונה.</p></div>
-    <div data-fb="wrong2"><p class="fb-t">זו טעות, כל הכבוד על הניסיון.</p><p>הסבר שמופיע אחרי שתי טעויות.</p></div>
+    <div data-fb="retry"><p class="fb-t">זו אינה התשובה, נסו שוב.</p><p>תוכלו ללחוץ על כפתור העזרה כדי לקבל רמז.</p></div>
+    <div data-fb="correct"><p class="fb-t">צדקת!</p>
+      <p>החציון נקבע לפי סדר הנתונים.</p>
+      <p>כלומר, כשהנתון 120 תוקן ל-145, סדר המספרים השתנה, ולכן גם החציון השתנה מ-125 ל-130.</p></div>
+    <div data-fb="wrong2"><p class="fb-t">זו טעות</p>
+      <p>החציון נקבע לפי סדר הנתונים.</p>
+      <p>כלומר, כשהנתון 120 תוקן ל-145, סדר המספרים השתנה, ולכן גם החציון השתנה מ-125 ל-130.</p></div>
   </div>
   <button class="nav-btn nav-prev" type="button" aria-label="חזרה"></button>
   <button class="nav-btn nav-next hidden" type="button" aria-label="המשך"></button>
 </section>
 
-<!-- ================= SCREEN 6 — שאלה 2: בחירה מרובה (שקפים 14-15) ================= -->
-<section class="screen" data-screen="6" data-sid="q2" data-type="question" data-kind="multi" data-weight="10" data-step="2" tabindex="-1">
-  <div class="screen-bg bg-placeholder"></div>
+<!-- ================= SCREEN 6 — שאלה 3: ממוצע וחציון שווים (שקפים 17-18) ================= -->
+<section class="screen" data-screen="6" data-sid="q3" data-type="question" data-kind="single" data-weight="14.2857" data-step="3" tabindex="-1">
+  <div class="screen-bg" data-pending-asset="background, PSD #12 (frame 17), without the white question panel"></div>
   <div class="q-overlay"></div>
+  <button class="help-btn" type="button" data-popup="help-q3">עזרה</button>
+  <div class="popup-src" id="help-q3" hidden>
+    <p>מהו המספר שנמצא באמצע הסדרה? ומה מתקבל כשנחלק את סכום כל הנתונים ב-5?</p>
+  </div>
   <div class="q-card">
-    <h2 class="q-title">שאלה 2</h2>
-    <p class="q-body"><strong>נוסח שאלה עם כמה תשובות נכונות?</strong></p>
-    <p class="q-instruction">סמנו את כל התשובות הנכונות.</p>
-    <div class="q-answers" role="group" aria-label="אפשרויות תשובה">
-      <div class="q-opt" data-multi data-id="1" data-correct role="checkbox" tabindex="0" aria-checked="false"><span class="q-mark"></span>תשובה נכונה ראשונה.</div>
-      <div class="q-opt" data-multi data-id="2" role="checkbox" tabindex="0" aria-checked="false"><span class="q-mark"></span>מסיח.</div>
-      <div class="q-opt" data-multi data-id="3" data-correct role="checkbox" tabindex="0" aria-checked="false"><span class="q-mark"></span>תשובה נכונה שנייה.</div>
-      <div class="q-opt" data-multi data-id="4" role="checkbox" tabindex="0" aria-checked="false"><span class="q-mark"></span>מסיח נוסף.</div>
+    <div class="applet-frame q-applet" data-pending-asset="applet: מיון צילומי רחפנים — שאלה 4 file, with the 145 correction (slide 17, elements are dragged)"></div>
+    <p class="q-body">3. ארז העלה מחשבה מעניינת:</p>
+    <p class="q-body">"נראה לי שבסדרת הנתונים המתוקנת, הממוצע והחציון שווים זה לזה!".</p>
+    <p class="q-instruction">תיקון הטעות שינה את הנתונים.</p>
+    <p class="q-instruction">סדרו אותם מחדש ביומן הטיסות, ואז קבעו האם הטענה נכונה.</p>
+    <div class="q-answers" role="radiogroup" aria-label="אפשרויות תשובה">
+      <div class="q-opt" data-id="1" data-correct role="radio" tabindex="0" aria-checked="false"><span class="q-mark"></span>נכונה</div>
+      <div class="q-opt" data-id="2" role="radio" tabindex="0" aria-checked="false"><span class="q-mark"></span>לא נכונה</div>
+      <div class="q-opt" data-id="3" role="radio" tabindex="0" aria-checked="false"><span class="q-mark"></span>לא ניתן לדעת</div>
     </div>
   </div>
-  <button class="btn-check" type="button" disabled>האם צדקתי?</button>
+  <button class="btn-check" type="button" disabled>צדקתי?</button>
   <div class="fb-src" hidden>
-    <div data-fb="retry"><p class="fb-t">זו אינה התשובה, נסו שוב.</p></div>
-    <div data-fb="retryPartial"><p class="fb-t">אתם בכיוון הנכון! יש תשובות נכונות נוספות.</p></div>
-    <div data-fb="correct"><p class="fb-t">צדקת!</p><p>הסבר משותף לכל התוצאות.</p></div>
-    <div data-fb="partial"><p class="fb-t">זו תשובה חלקית.</p><p>הסבר משותף לכל התוצאות.</p></div>
-    <div data-fb="wrong2"><p class="fb-t">זו טעות, כל הכבוד על הניסיון.</p><p>הסבר משותף לכל התוצאות.</p></div>
+    <div data-fb="retry"><p class="fb-t">זו אינה התשובה, נסו שוב.</p><p>תוכלו ללחוץ על כפתור העזרה כדי לקבל רמז.</p></div>
+    <div data-fb="correct"><p class="fb-t">צדקת!</p>
+      <p>סדרת הנתונים המתוקנת היא:</p>
+      <p>110, 125, 130, 140, 145.</p>
+      <p>לכן החציון הוא 130, וגם הממוצע הוא 130:</p>
+      <p>110 + 125 + 130 + 140 + 145 = 650</p>
+      <p>130 = 5 ÷ 650</p>
+      <p>במקרה הזה שני המדדים שווים, ולכן ארז צודק.</p></div>
+    <div data-fb="wrong2"><p class="fb-t">זו טעות</p>
+      <p>סדרת הנתונים המתוקנת היא:</p>
+      <p>110, 125, 130, 140, 145.</p>
+      <p>לכן החציון הוא 130, וגם הממוצע הוא 130:</p>
+      <p>110 + 125 + 130 + 140 + 145 = 650</p>
+      <p>130 = 5 ÷ 650</p>
+      <p>במקרה הזה שני המדדים שווים, ולכן ארז צודק.</p></div>
   </div>
   <button class="nav-btn nav-prev" type="button" aria-label="חזרה"></button>
   <button class="nav-btn nav-next hidden" type="button" aria-label="המשך"></button>
 </section>
 
-<!-- ================= SCREEN 7 — ישומון (שקף 16) ================= -->
-<section class="screen" data-screen="7" data-sid="demo-sim" data-type="applet" data-arrow-after="5" tabindex="-1">
-  <div class="screen-bg bg-placeholder"></div>
-  <div class="narration-banner"><p>הפעילו את ההדמיה וצפו במה שקורה.</p></div>
-  <div class="applet-frame" data-reopen-content>
-    <iframe src="assets/app/demo-applet.html" title="הדמיה לדוגמה"></iframe>
-  </div>
+<!-- ================= SCREEN 7 — טיסת מבחן נוספת (שקף 19) ================= -->
+<section class="screen" data-screen="7" data-sid="next-test" data-type="explain" tabindex="-1">
+  <div class="screen-bg" data-pending-asset="background, PSD #11 (frame 19)"></div>
+  <div class="narration-banner"><p>המתחם הגדול ביותר בפארק דורש ביצועים גבוהים במיוחד. לכן ארז וליהי החליטו לערוך ל"נץ" טיסת מבחן נוספת ולבדוק אם יוכל לעמוד במשימה.</p></div>
   <button class="nav-btn nav-prev" type="button" aria-label="חזרה"></button>
   <button class="nav-btn nav-next hidden" type="button" aria-label="המשך"></button>
 </section>
 
-<!-- ================= SCREEN 8 — שאלה 3: גרירת מילים (שקפים 17-18) ================= -->
-<section class="screen" data-screen="8" data-sid="q3" data-type="question" data-kind="dnd" data-weight="10" data-step="3" tabindex="-1">
-  <div class="screen-bg bg-placeholder"></div>
+<!-- ================= SCREEN 8 — שאלה 4: הוספת נתון השווה לממוצע (שקפים 20-21) ================= -->
+<section class="screen" data-screen="8" data-sid="q4" data-type="question" data-kind="single" data-weight="14.2857" data-step="4" tabindex="-1">
+  <div class="screen-bg" data-pending-asset="background, PSD #10 (frame 20), without the white question panel"></div>
   <div class="q-overlay"></div>
-  <button class="reopen-btn" type="button" data-reopen="demo-sim">לצפייה בהדמיה</button>
-  <div class="q-card">
-    <h2 class="q-title">שאלה 3</h2>
-    <p class="q-instruction">השלימו את המילים החסרות בקטע באמצעות גרירת מילים מהמחסן.</p>
-    <div class="dnd-bank" aria-label="מחסן מילים">
-      <button class="dnd-chip" type="button" data-chip="c1" data-order="1">מילה א</button>
-      <button class="dnd-chip" type="button" data-chip="c2" data-order="2">מילה ב</button>
-      <button class="dnd-chip" type="button" data-chip="c3" data-order="3">מילה ג</button>
-    </div>
-    <p class="cloze">משפט ראשון עם <span class="dnd-slot" data-accept="c2" role="button" tabindex="0" aria-label="מקום ריק 1"></span> באמצע,
-      ומשפט שני עם <span class="dnd-slot" data-accept="c3" role="button" tabindex="0" aria-label="מקום ריק 2"></span>
-      ועוד <span class="dnd-slot" data-accept="c1" role="button" tabindex="0" aria-label="מקום ריק 3"></span>.</p>
+  <button class="help-btn" type="button" data-popup="help-q4">עזרה</button>
+  <div class="popup-src" id="help-q4" hidden>
+    <p>האם הוספת מספר ששווה בדיוק לממוצע יכולה למשוך את הממוצע למעלה או למטה?</p>
   </div>
-  <button class="btn-check" type="button" disabled>האם צדקתי?</button>
+  <div class="q-card">
+    <div class="figure-frame q-figure" data-pending-asset="picture: Lihi thinking (slide 20), PSD #10"></div>
+    <p class="q-body">4. בחמש טיסות המבחן, הרחפן מדגם "נץ" צילם 110, 125, 130, 140 ו-145 תמונות, והממוצע שלהן הוא 130.</p>
+    <p class="q-body">ליהי חשבה לעצמה:</p>
+    <p class="q-body">"אם בטיסת המבחן השישית מספר התמונות יהיה זהה לממוצע, אז הממוצע של מספר התמונות ב-6 הטיסות ישתנה."</p>
+    <p class="q-instruction">האם המחשבה של ליהי נכונה או לא נכונה?</p>
+    <div class="q-answers" role="radiogroup" aria-label="אפשרויות תשובה">
+      <div class="q-opt" data-id="1" role="radio" tabindex="0" aria-checked="false"><span class="q-mark"></span>נכונה</div>
+      <div class="q-opt" data-id="2" data-correct role="radio" tabindex="0" aria-checked="false"><span class="q-mark"></span>לא נכונה</div>
+      <div class="q-opt" data-id="3" role="radio" tabindex="0" aria-checked="false"><span class="q-mark"></span>לא ניתן לדעת</div>
+    </div>
+  </div>
+  <button class="btn-check" type="button" disabled>צדקתי?</button>
   <div class="fb-src" hidden>
-    <div data-fb="retry"><p class="fb-t">נסו שוב! חלק מהמילים לא במקום.</p></div>
-    <div data-fb="correct"><p class="fb-t">צדקת!</p><p>התשובה הנכונה מופיעה כעת על המסך.</p></div>
-    <div data-fb="wrong2"><p class="fb-t">זו טעות, כל הכבוד על הניסיון.</p><p>התשובה הנכונה מופיעה כעת על המסך.</p></div>
+    <div data-fb="retry"><p class="fb-t">זו אינה התשובה, נסו שוב.</p><p>תוכלו ללחוץ על כפתור העזרה כדי לקבל רמז.</p></div>
+    <div data-fb="correct"><p class="fb-t">צדקת!</p>
+      <p>הוספת נתון ששווה לממוצע לא משנה את הממוצע.</p>
+      <p>לכן ליהי טועה.</p></div>
+    <div data-fb="wrong2"><p class="fb-t">זו טעות</p>
+      <p>הוספת נתון ששווה לממוצע לא משנה את הממוצע.</p>
+      <p>לכן ליהי טועה.</p></div>
   </div>
   <button class="nav-btn nav-prev" type="button" aria-label="חזרה"></button>
   <button class="nav-btn nav-next hidden" type="button" aria-label="המשך"></button>
 </section>
 
-<!-- ================= SCREEN 9 — סיום (שקף 19) ================= -->
-<section class="screen" data-screen="9" data-sid="finish" data-type="finish" tabindex="-1">
-  <div class="screen-bg bg-placeholder"></div>
-  <div class="narration-banner"><p>משפט סיכום שסוגר את הסיפור.</p></div>
-  <button class="btn-primary finish-btn" type="button" data-action="finish">סיימתי</button>
+<!-- ================= SCREEN 9 — שאלה 5: חישוב הנתון החסר (שקפים 22-23) ================= -->
+<section class="screen" data-screen="9" data-sid="q5" data-type="question" data-kind="input" data-weight="14.2857" data-step="5" tabindex="-1">
+  <div class="screen-bg" data-pending-asset="background, PSD #9 (frame 22), without the white question panel"></div>
+  <div class="q-overlay"></div>
+  <button class="help-btn" type="button" data-popup="help-q5">עזרה</button>
+  <div class="popup-src" id="help-q5" hidden>
+    <p>התחילו בחישוב מספר התמונות הכולל של 6 הטיסות (132 ⋅ 6), ולאחר מכן חשבו כמה תמונות צולמו ב-5 הטיסות הראשונות.</p>
+  </div>
+  <div class="q-card">
+    <div class="figure-frame q-figure" data-pending-asset="picture: drone (slide 22), PSD #9"></div>
+    <p class="q-body">5. ארז וליהי קבעו שכדי לעמוד במשימה, הממוצע של 6 טיסות המבחן של הרחפן צריך להיות 132 תמונות.</p>
+    <p class="q-body">ב-5 טיסות המבחן הראשונות הרחפן צילם 110, 125, 130, 140 ו-145 תמונות.</p>
+    <p class="q-instruction">הקלידו כמה תמונות הרחפן צריך לצלם בטיסת המבחן השישית:</p>
+    <p class="q-fill"><span class="q-input" data-answer="142" data-match="value"><input class="q-in" inputmode="numeric" aria-label="מספר התמונות בטיסת המבחן השישית"></span> תמונות.</p>
+  </div>
+  <button class="btn-check" type="button" disabled>צדקתי?</button>
+  <div class="fb-src" hidden>
+    <div data-fb="retry"><p class="fb-t">זו אינה התשובה, נסו שוב.</p><p>תוכלו ללחוץ על כפתור העזרה כדי לקבל רמז.</p></div>
+    <div data-fb="correct"><p class="fb-t">צדקת!</p>
+      <p>ב-5 הטיסות הראשונות צולמו 650 תמונות.</p>
+      <p>נסמן ב-x את מספר התמונות בטיסה השישית, ונקבל:</p>
+      <p class="eq-line"><span class="eq"><span class="frac"><span>650+x</span><span>6</span></span> = 132 / ·6</span></p>
+      <p class="eq-line"><span class="eq">650 + x = 792 / -650</span></p>
+      <p class="eq-line"><span class="eq">x = 142</span></p>
+      <p>כלומר, בטיסה השישית הרחפן צריך לצלם 142 תמונות.</p></div>
+    <div data-fb="wrong2"><p class="fb-t">זו טעות</p>
+      <p>ב-5 הטיסות הראשונות צולמו 650 תמונות.</p>
+      <p>נסמן ב-x את מספר התמונות בטיסה השישית, ונקבל:</p>
+      <p class="eq-line"><span class="eq"><span class="frac"><span>650+x</span><span>6</span></span> = 132 / ·6</span></p>
+      <p class="eq-line"><span class="eq">650 + x = 792 / -650</span></p>
+      <p class="eq-line"><span class="eq">x = 142</span></p>
+      <p>כלומר, בטיסה השישית הרחפן צריך לצלם 142 תמונות.</p></div>
+  </div>
+  <button class="nav-btn nav-prev" type="button" aria-label="חזרה"></button>
+  <button class="nav-btn nav-next hidden" type="button" aria-label="המשך"></button>
+</section>
+
+<!-- ================= SCREEN 10 — תוצאת טיסת המבחן השישית (שקף 24) ================= -->
+<section class="screen" data-screen="10" data-sid="test-six" data-type="explain" tabindex="-1">
+  <div class="screen-bg" data-pending-asset="background, PSD #8 (frame 24) — subtle looping 'what the drone films' animation (slide 24 note)"></div>
+  <div class="narration-banner"><p>ארז וליהי השלימו את טיסת המבחן השישית של הרחפן מדגם "נץ". אבל בטיסה הזו הוא צילם רק 130 תמונות. כלומר, הוא לא עמד במשימה של צילום 142 התמונות הנדרשות לממוצע.</p></div>
+  <button class="nav-btn nav-prev" type="button" aria-label="חזרה"></button>
+  <button class="nav-btn nav-next hidden" type="button" aria-label="המשך"></button>
+</section>
+
+<!-- ================= SCREEN 11 — שאלה 6: השפעת טיסה שביעית על המדדים (שקפים 25-26) ================= -->
+<section class="screen" data-screen="11" data-sid="q6" data-type="question" data-kind="dnd" data-weight="14.2857" data-step="6" tabindex="-1">
+  <div class="screen-bg" data-pending-asset="background, PSD #7 (frame 25), without the white question panel"></div>
+  <div class="q-overlay"></div>
+  <button class="help-btn" type="button" data-popup="help-q6">עזרה</button>
+  <div class="popup-src" id="help-q6" hidden>
+    <p>איזה מדד מושפע מהגודל של כל מספר בסדרה?</p>
+  </div>
+  <div class="q-card">
+    <p class="q-body">6. ארז וליהי החליטו לשדרג את הרחפן בסוללה חדשה, בתקווה שישפר את הביצועים שלו.</p>
+    <p class="q-body">כדי לבדוק את השדרוג, הם ביצעו טיסת מבחן שביעית.</p>
+    <p class="q-body">במהלך הטיסה התרחשה תקלה, והרחפן צילם פחות מ 15 תמונות!</p>
+    <p class="q-body">נזכיר שב-6 הטיסות הקודמות הרחפן צילם 110, 125, 130, 130, 140 ו-145 תמונות.</p>
+    <p class="q-instruction">עזרו לארז וליהי להבין את השפעת הטיסה השביעית על המדדים.</p>
+    <p class="q-instruction">גררו לכל מדד את התיאור המתאים:</p>
+    <!-- An endless stack of each card (storyboard note, slide 25): four copies of each, so any card can go to any row. -->
+    <div class="dnd-bank" aria-label="כרטיסיות">
+      <button class="dnd-chip" type="button" data-chip="up1" data-order="1">גדל</button>
+      <button class="dnd-chip" type="button" data-chip="up2" data-order="2">גדל</button>
+      <button class="dnd-chip" type="button" data-chip="up3" data-order="3">גדל</button>
+      <button class="dnd-chip" type="button" data-chip="up4" data-order="4">גדל</button>
+      <button class="dnd-chip" type="button" data-chip="dn1" data-order="5">קטן</button>
+      <button class="dnd-chip" type="button" data-chip="dn2" data-order="6">קטן</button>
+      <button class="dnd-chip" type="button" data-chip="dn3" data-order="7">קטן</button>
+      <button class="dnd-chip" type="button" data-chip="dn4" data-order="8">קטן</button>
+      <button class="dnd-chip" type="button" data-chip="eq1" data-order="9">נשאר ללא שינוי</button>
+      <button class="dnd-chip" type="button" data-chip="eq2" data-order="10">נשאר ללא שינוי</button>
+      <button class="dnd-chip" type="button" data-chip="eq3" data-order="11">נשאר ללא שינוי</button>
+      <button class="dnd-chip" type="button" data-chip="eq4" data-order="12">נשאר ללא שינוי</button>
+    </div>
+    <p class="metric-row">השכיח <span class="dnd-slot" data-accept="eq1 eq2 eq3 eq4" role="button" tabindex="0" aria-label="השכיח"></span></p>
+    <p class="metric-row">הממוצע <span class="dnd-slot" data-accept="dn1 dn2 dn3 dn4" role="button" tabindex="0" aria-label="הממוצע"></span></p>
+    <p class="metric-row">החציון <span class="dnd-slot" data-accept="eq1 eq2 eq3 eq4" role="button" tabindex="0" aria-label="החציון"></span></p>
+    <p class="metric-row">הטווח <span class="dnd-slot" data-accept="up1 up2 up3 up4" role="button" tabindex="0" aria-label="הטווח"></span></p>
+  </div>
+  <button class="btn-check" type="button" disabled>צדקתי?</button>
+  <div class="fb-src" hidden>
+    <div data-fb="retry"><p class="fb-t">זו אינה התשובה, נסו שוב.</p><p>תוכלו ללחוץ על כפתור העזרה כדי לקבל רמז.</p></div>
+    <div data-fb="correct"><p class="fb-t">צדקת!</p>
+      <p>הטיסה השביעית השפיעה על המדדים באופן שונה:</p>
+      <p>השכיח נשאר ללא שינוי: 130 הוא עדיין מספר התמונות שמופיע הכי הרבה פעמים.</p>
+      <p>הממוצע קטן: מספר התמונות הנמוך בטיסה השביעית הוריד את הממוצע.</p>
+      <p>החציון נשאר ללא שינוי: לאחר סידור הנתונים מהקטן לגדול, הערך האמצעי עדיין 130.</p>
+      <p>הטווח גדל: ההפרש בין מספר התמונות הגדול ביותר לקטן ביותר גדל.</p></div>
+    <div data-fb="wrong2"><p class="fb-t">זו טעות</p>
+      <p>הטיסה השביעית השפיעה על המדדים באופן שונה:</p>
+      <p>השכיח נשאר ללא שינוי: 130 הוא עדיין מספר התמונות שמופיע הכי הרבה פעמים.</p>
+      <p>הממוצע קטן: מספר התמונות הנמוך בטיסה השביעית הוריד את הממוצע.</p>
+      <p>החציון נשאר ללא שינוי: לאחר סידור הנתונים מהקטן לגדול, הערך האמצעי עדיין 130.</p>
+      <p>הטווח גדל: ההפרש בין מספר התמונות הגדול ביותר לקטן ביותר גדל.</p></div>
+  </div>
+  <button class="nav-btn nav-prev" type="button" aria-label="חזרה"></button>
+  <button class="nav-btn nav-next hidden" type="button" aria-label="המשך"></button>
+</section>
+
+<!-- ================= SCREEN 12 — הרחפן שובץ: מתחמי הפארק (שקף 27) ================= -->
+<section class="screen" data-screen="12" data-sid="park-lights" data-type="explain" tabindex="-1">
+  <div class="screen-bg" data-pending-asset="background, PSD #6 (frame 27) — park lights twinkle, looping animation (slide 27 note)"></div>
+  <div class="narration-banner"><p>התקלה ברחפן מדגם "נץ" תוקנה. הוא השלים בהצלחה את סדרת טיסות המבחן ושובץ למתחם המתאים לו בפארק. גם שאר דגמי הרחפנים עברו סדרת טיסות מבחן, ועכשיו הגיע הזמן לשבץ אותם במתחמי הפארק.</p></div>
+  <button class="nav-btn nav-prev" type="button" aria-label="חזרה"></button>
+  <button class="nav-btn nav-next hidden" type="button" aria-label="המשך"></button>
+</section>
+
+<!-- ================= SCREEN 13 — מרכז הבקרה (שקף 28) ================= -->
+<section class="screen" data-screen="13" data-sid="control-center" data-type="applet" data-arrow-after="15" tabindex="-1">
+  <div class="screen-bg" data-pending-asset="background, PSD #5 (frame 28): the office with the computer screen"></div>
+  <div class="narration-banner"><p>לחצו על מסך המחשב, קחו שליטה על מרכז הבקרה ועזרו לארז וליהי להשלים את המשימה.</p></div>
+  <!-- The screen grows to full screen on click; the arrow must wait for the task to be completed in the applet (slide 28 notes). -->
+  <div class="applet-frame" data-pending-asset="applet: מרכז הבקרה (slide 28) — click grows it to full screen; continue only after the task is completed"></div>
+  <button class="nav-btn nav-prev" type="button" aria-label="חזרה"></button>
+  <button class="nav-btn nav-next hidden" type="button" aria-label="המשך"></button>
+</section>
+
+<!-- ================= SCREEN 14 — ערב ההוקרה: הפוסט (שקף 29) ================= -->
+<section class="screen" data-screen="14" data-sid="party" data-type="explain" tabindex="-1">
+  <div class="screen-bg" data-pending-asset="background, PSD #4 (frame 29) — kids gather, flash and camera sound, phone rises, post with likes (slide 29 note)"></div>
+  <div class="narration-banner"><p>ערב ההוקרה היה מ-ד-ה-י-ם, ובני הנוער המתנדבים נהנו מאוד! בזכות העזרה שלכם, הרחפנים שובצו בהצלחה והאירוע התנהל בצורה חלקה ובטוחה.</p></div>
+  <div class="post-card">
+    <p class="post-name">ארז – מפיק אירועים</p>
+    <p class="post-time">לפני 20 דקות</p>
+    <p class="post-text">איזה ערב היה לנו!!! 🎉</p>
+    <p class="post-text">תודה לכל בני הנוער המתנדבים שמילאו את הפארק בחיוכים ובאנרגיות! ✨</p>
+    <p class="post-likes">128</p>
+  </div>
+  <button class="nav-btn nav-prev" type="button" aria-label="חזרה"></button>
+  <button class="nav-btn nav-next hidden" type="button" aria-label="המשך"></button>
+</section>
+
+<!-- ================= SCREEN 15 — שאלה 7: דרישת מנהל הפארק (שקפים 30-31) ================= -->
+<section class="screen" data-screen="15" data-sid="q7" data-type="question" data-kind="single" data-weight="14.2857" data-step="7" tabindex="-1">
+  <div class="screen-bg" data-pending-asset="background, PSD #3 (frame 31), without the white question panel"></div>
+  <div class="q-overlay"></div>
+  <button class="help-btn" type="button" data-popup="help-q7">עזרה</button>
+  <div class="popup-src" id="help-q7" hidden>
+    <p>חשבו איזה מדד סטטיסטי מחלק את הנתונים בדיוק לשני חצאים, כך שנוכל לדעת בוודאות מה קורה ב-50% "העליונים" של הטיסות?</p>
+    <p>האם זה הממוצע, הטווח או החציון?</p>
+  </div>
+  <div class="q-card">
+    <p class="q-body">הביצועים של הרחפן מדגם "נץ" הרשימו גם מנהלי פארקים אחרים.</p>
+    <p class="q-body">מנהל הפארק בעיר שלכם ביקש לבדוק את נתוני טיסות המבחן של הרחפן "נץ", ואמר:</p>
+    <p class="q-body">"אני מוכן לרכוש את הרחפן רק אם <strong>ברוב מוחלט</strong> של הטיסות (יותר מ-50%) הוא צילם <strong>לפחות 125 תמונות."</strong></p>
+    <p class="q-instruction">נזכיר שב-6 טיסות המבחן צילם הרחפן "נץ" 145, 110, 125, 130, 130, 140 תמונות.</p>
+    <p class="q-instruction">איזה מההיגדים הוא הנכון ביותר?</p>
+    <div class="q-answers" role="radiogroup" aria-label="אפשרויות תשובה">
+      <div class="q-opt" data-id="1" role="radio" tabindex="0" aria-checked="false"><span class="q-mark"></span>הדרישה מתקיימת - הממוצע הוא 130, וזה מוכיח שברוב הטיסות צולמו יותר מ-125 תמונות.</div>
+      <div class="q-opt" data-id="2" data-correct role="radio" tabindex="0" aria-checked="false"><span class="q-mark"></span>הדרישה מתקיימת - החציון הוא 130, כך שלפחות בחצי מהטיסות צולמו 130 תמונות ומעלה.</div>
+      <div class="q-opt" data-id="3" role="radio" tabindex="0" aria-checked="false"><span class="q-mark"></span>הדרישה אינה מתקיימת - ישנה טיסה שבה צולמו רק 110 תמונות.</div>
+      <div class="q-opt" data-id="4" role="radio" tabindex="0" aria-checked="false"><span class="q-mark"></span>הדרישה אינה מתקיימת - הטווח של הנתונים הוא 35, וזה אומר שיש פער גדול מדי בביצועי הסוללה מכדי להבטיח יציבות.</div>
+    </div>
+  </div>
+  <button class="btn-check" type="button" disabled>צדקתי?</button>
+  <div class="fb-src" hidden>
+    <div data-fb="retry"><p class="fb-t">זו אינה התשובה, נסו שוב.</p><p>תוכלו ללחוץ על כפתור העזרה כדי לקבל רמז.</p></div>
+    <div data-fb="correct"><p class="fb-t">צדקת!</p>
+      <p>החציון הוא 130, ולכן לפחות במחצית מהטיסות צולמו 130 תמונות ומעלה.</p>
+      <p>מכיוון ש-130 גדול מ-125, דרישת מנהל הפארק מתקיימת.</p>
+      <p>💡נקודה למחשבה:</p>
+      <p>הנימוק הראשון מבלבל!</p>
+      <p>הממוצע יכול להיות מושפע מטיסה אחת יוצאת דופן.</p>
+      <p>כשבודקים מה קרה אצל <strong>רוב הטיסות,</strong> אז <strong>החציון</strong> הוא המדד האמין יותר.</p></div>
+    <div data-fb="wrong2"><p class="fb-t">זו טעות</p>
+      <p>החציון הוא 130, ולכן לפחות במחצית מהטיסות צולמו 130 תמונות ומעלה.</p>
+      <p>מכיוון ש-130 גדול מ-125, דרישת מנהל הפארק מתקיימת.</p>
+      <p>💡נקודה למחשבה:</p>
+      <p>הנימוק הראשון מבלבל!</p>
+      <p>הממוצע יכול להיות מושפע מטיסה אחת יוצאת דופן.</p>
+      <p>כשבודקים מה קרה אצל <strong>רוב הטיסות,</strong> אז <strong>החציון</strong> הוא המדד האמין יותר.</p></div>
+  </div>
+  <button class="nav-btn nav-prev" type="button" aria-label="חזרה"></button>
+  <button class="nav-btn nav-next hidden" type="button" aria-label="המשך"></button>
+</section>
+
+<!-- ================= SCREEN 16 — סיום: פסטיבל משפחות (שקפים 32-33) ================= -->
+<section class="screen" data-screen="16" data-sid="finish" data-type="finish" tabindex="-1">
+  <div class="screen-bg" data-pending-asset="background, PSD #2 (frame 32) — drone flies over the park (loop) with festival and drone sound (slide 32 note)"></div>
+  <div class="narration-banner"><p>אחרי שהרחפן מדגם "נץ" הוכיח את עצמו בטיסות המבחן, הוא כבר יצא למשימה הבאה! הפעם הוא מרחף מעל פסטיבל משפחות, ועוזר לשמור על בטיחות המשתתפים.</p></div>
+  <button class="help-btn finish-btn" type="button" data-popup="final-grade">סיימתי</button>
+  <div class="popup-src" id="final-grade" data-close-action="finish" hidden>
+    <p><strong>כל הכבוד, המשימה הושלמה!</strong></p>
+    <p>הציון שלך הוא <span data-final-grade>__</span>.</p>
+    <p>יש לסגור את המשימה בלחיצה על X.</p>
+  </div>
   <button class="nav-btn nav-prev" type="button" aria-label="חזרה"></button>
 </section>
 
