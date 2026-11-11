@@ -845,14 +845,18 @@ button, input, select, textarea { font-family: inherit; }
 @keyframes flashOnce { 0% { opacity: 0; } 25% { opacity: .85; } 100% { opacity: 0; } }
 @keyframes phoneRise { from { transform: translateY(110%); opacity: 0; } to { transform: none; opacity: 1; } }
 /* ---- 15 · q7 ---- */
-[data-sid="q7"] .q-text { right: 150px; width: 1030px; }
-/* No picture here, so the explanation takes the whole free left side (x 70-730, y 160-925: it stops above the back arrow);
-   42 / 52 px is the most that fits (was 34 / 46). The text column keeps clear of the forward arrow (right edge 1770). */
-#feedback-popup.fb-q7 { left: 70px; top: 160px; width: 660px; min-height: 765px; box-sizing: border-box; padding: 28px 36px; }
+/* No picture here, so the question and the four answers run across the whole top of the white panel (x 190-1770: the right edge
+   stays clear of the pills and the back arrow, the left edge of the help button), and the explanation is a wide, short band along
+   the foot of the panel (x 190-1770, bottom at y 1050), right under the answers and clear of both arrows (y 936-1039, outside x 150-1770).
+   The two "point to think" lines and the reason after them run together on one line, so the band is 4 lines + title at 40 px. */
+[data-sid="q7"] .q-text { top: 112px; left: 190px; right: 150px; width: auto; }
+[data-sid="q7"] .q-body, [data-sid="q7"] .q-instruction { margin-bottom: 8px; }
+#feedback-popup.fb-q7 { left: 190px; top: auto; bottom: 30px; width: 1580px; min-height: 0; box-sizing: border-box; padding: 14px 36px 10px; }
 #feedback-popup.fb-q7.show:not(.retry) { display: flex; flex-direction: column; justify-content: center; }
-#feedback-popup.fb-q7 .fb-title { font-size: 52px; }
-#feedback-popup.fb-q7 .fb-body p { font-size: 42px; }
-#feedback-popup.fb-q7.retry { min-height: 0; padding: 24px 36px 20px; }
+#feedback-popup.fb-q7 .fb-title { font-size: 46px; }
+#feedback-popup.fb-q7 .fb-body p { font-size: 40px; margin-bottom: 3px; }
+#feedback-popup.fb-q7 .fb-body p:nth-child(n+3):nth-child(-n+5) { display: inline; margin-inline-end: 18px; }
+#feedback-popup.fb-q7.retry { left: 670px; width: 1100px; padding: 24px 40px 20px; }
 #feedback-popup.fb-q7.retry .fb-title { font-size: 50px; }
 #feedback-popup.fb-q7.retry .fb-body p { font-size: 42px; }
 /* ---- 16 · finish ---- */
