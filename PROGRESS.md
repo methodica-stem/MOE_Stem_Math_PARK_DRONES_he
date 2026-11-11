@@ -113,3 +113,4 @@ Phase 1 state: text and behaviour are in index.html as a skeleton (learner text 
 
 ## Delivery log
 <!-- date · git commit · repo link · SharePoint link · what changed since the last one -->
+- 2026-11-11 · `e84738e` · https://github.com/methodicelElearnig/STEM_Park_Drones/tree/e84738e6c24cd876e7d345ab389e5a76094cbe4f · SharePoint `STEM מתמטיקה/_חטיבת ביניים_/רחפנים/repo/` (`.url` + `STEM_Park_Drones_HE_e84738e.zip`, git archive, 28 MB; the 72c7ea1 zip removed) · since delivery 1: screen 15 (question 7) layout only (question and answers across the top, feedback as a wide short band at the bottom). Videos for screens 2 and 4 still missing.
