@@ -893,17 +893,19 @@ button, input, select, textarea { font-family: inherit; }
 [data-sid="party"] .phone { z-index: 9; opacity: 0; transform: translateY(110%); }   /* in front of the narration bubble (7), which is taller now */
 [data-sid="party"] .flash { opacity: 0; }
 [data-sid="party"] .post-photo { opacity: 0; }
-[data-sid="party"] .snap { left: 0; top: 0; width: 1920px; height: 1080px; background: url('assets/images/party-bg.jpg') center / cover; opacity: 0; }
+/* The snapped photo is its own full-stage layer (it used to sit inside .phone, so it rode up with the phone as a full-screen picture before the snap). Moved with transform only (no layout), whole picture shrunk evenly, no re-crop. */
+[data-sid="party"] .snap { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; background: url('assets/images/party-bg.jpg') center / 100% 100% no-repeat; opacity: 0; z-index: 10; pointer-events: none; transform-origin: 0 0; will-change: transform, opacity; }
 [data-sid="party"] .react { display: inline-block; opacity: 0; }
 .screen.active.party-go[data-sid="party"] .flash { animation: flashOnce .4s ease-out both; }
 .screen.active.party-go[data-sid="party"] .phone { animation: phoneRise .9s ease-out .6s both; }
-.screen.active.party-go[data-sid="party"] .snap { animation: snapIn .95s cubic-bezier(.5,0,.2,1) 1.6s both; }
-.screen.active.party-go[data-sid="party"] .post-photo { animation: fadeIn .3s linear 2.55s both; }
+.screen.active.party-go[data-sid="party"] .snap { animation: snapIn 1.15s cubic-bezier(.5,0,.2,1) 1.6s both; }
+.screen.active.party-go[data-sid="party"] .post-photo { animation: fadeIn .3s linear 2.45s both; }
 .screen.active.party-go[data-sid="party"] .react { animation: pop .5s ease-out 2.7s both; }
 @keyframes snapIn {
-  0% { left: 0; top: 0; width: 1920px; height: 1080px; opacity: 1; }
-  99% { left: 1228px; top: 563px; width: 384px; height: 290px; opacity: 1; }
-  100% { left: 1228px; top: 563px; width: 384px; height: 290px; opacity: 0; }
+  0% { opacity: 0; transform: translate(0, 0) scale(1); }
+  8% { opacity: 1; transform: translate(0, 0) scale(1); }
+  78% { opacity: 1; transform: translate(1228px, 600px) scale(.2); }   /* 384 x 216 inside the 384 x 290 post slot */
+  100% { opacity: 0; transform: translate(1228px, 600px) scale(.2); }
 }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes pop { 0% { opacity: 0; transform: scale(.3); } 70% { transform: scale(1.25); } 100% { opacity: 1; transform: none; } }
