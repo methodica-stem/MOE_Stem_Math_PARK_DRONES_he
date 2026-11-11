@@ -26,7 +26,15 @@
 <!-- ================= SCREEN 1 — פתיחה: ערב הוקרה בפארק (שקף 2) ================= -->
 <section class="screen active" data-screen="1" data-sid="intro" data-type="explain" data-arrow-delay="3" tabindex="-1">
   <img class="screen-bg" src="assets/images/intro-bg.jpg" alt="">
-  <img class="fx fx-lights" src="assets/images/intro-lights.png" alt="">
+  <!-- The designer's lights layer, split by region (tools/split_intro_lights.py); each region has its own timing in styles.css. -->
+  <img class="fx fx-lt fx-lt-sky" src="assets/images/intro-fx-sky.png" alt="">
+  <img class="fx fx-lt fx-lt-stage" src="assets/images/intro-fx-stage.png" alt="">
+  <img class="fx fx-lt fx-lt-screens" src="assets/images/intro-fx-screens.png" alt="">
+  <img class="fx fx-lt fx-lt-cool" src="assets/images/intro-fx-cool.png" alt="">
+  <img class="fx fx-lt fx-lt-pink" src="assets/images/intro-fx-pink.png" alt="">
+  <img class="fx fx-lt fx-lt-warm1" src="assets/images/intro-fx-warm1.png" alt="">
+  <img class="fx fx-lt fx-lt-warm2" src="assets/images/intro-fx-warm2.png" alt="">
+  <img class="fx fx-lt fx-lt-warm3" src="assets/images/intro-fx-warm3.png" alt="">
   <div class="narration-banner"><p>בעוד 24 שעות ייערך בפארק "האורות" ערב הוקרה לנוער המתנדב של העיר! אלפי בני נוער צפויים להגיע, וצוות הבקרה של הפארק ערוך להפעיל רחפנים כדי לזהות אזורים עמוסים ולעזור לצוותי הביטחון במהלך האירוע.</p></div>
   <button class="nav-btn nav-next hidden" type="button" aria-label="המשך"></button>
 </section>
@@ -66,7 +74,7 @@
     <p>לחישוב הטווח, חסרו את הנתון הקטן ביותר מהנתון הגדול ביותר, ואז חפשו את המספר שנמצא בדיוק באמצע, לקבלת החציון.</p>
   </div>
   <div class="q-card">
-    <div class="applet-frame q-applet" data-pending-asset="applet: מיון צילומי רחפנים — שאלה 1 (slide 9, elements are dragged)"></div>
+    <div class="applet-frame q-applet"><iframe src="assets/app/q1-sort.html?v=2" title="יישומון: סידור מספרי התמונות מהקטן לגדול" scrolling="no"></iframe></div>
     <div class="q-text">
       <p class="q-body">1. ליהי וארז רוצים לחשב את החציון ואת הטווח של התמונות, כדי להבין מהן היכולות של הרחפן מדגם "נץ".</p>
       <p class="q-body">ביומן הטיסות מופיע מספר התמונות שהוא צילם בכל טיסה.</p>
@@ -162,7 +170,7 @@
     <p>מהו המספר שנמצא באמצע הסדרה? ומה מתקבל כשנחלק את סכום כל הנתונים ב-5?</p>
   </div>
   <div class="q-card">
-    <div class="applet-frame q-applet" data-pending-asset="applet: מיון צילומי רחפנים — שאלה 4 file, with the 145 correction (slide 17, elements are dragged)"></div>
+    <div class="applet-frame q-applet"><iframe src="assets/app/q3-sort.html?v=2" title="יישומון: סידור מספרי התמונות מהקטן לגדול, אחרי התיקון" scrolling="no"></iframe></div>
     <div class="q-text">
       <p class="q-body">3. ארז העלה מחשבה מעניינת:</p>
       <p class="q-body">"נראה לי שבסדרת הנתונים המתוקנת, הממוצע והחציון שווים זה לזה!".</p>
@@ -285,7 +293,10 @@
 <!-- ================= SCREEN 10 — תוצאת טיסת המבחן השישית (שקף 24) ================= -->
 <section class="screen" data-screen="10" data-sid="test-six" data-type="explain" tabindex="-1">
   <img class="screen-bg" src="assets/images/test-six-bg.jpg" alt="">
-  <img class="fx fx-view" src="assets/images/test-six-view.jpg" alt="">
+  <div class="fx fx-viewclip" aria-hidden="true">
+    <!-- the drone's camera view: a generated, seamlessly looping, silent clip (tools/make_loop_clip.py); plays on entry (HOOKS['test-six']) -->
+    <video class="fx fx-view" muted loop playsinline preload="auto" disablepictureinpicture poster="assets/images/test-six-clip-poster.jpg" src="assets/videos/test-six-drone.mp4"></video>
+  </div>
   <img class="fx fx-hud" src="assets/images/test-six-hud.png" alt="">
   <div class="narration-banner"><p>ארז וליהי השלימו את טיסת המבחן השישית של הרחפן מדגם "נץ". אבל בטיסה הזו הוא צילם רק 130 תמונות. כלומר, הוא לא עמד במשימה של צילום 142 התמונות הנדרשות לממוצע.</p></div>
   <button class="nav-btn nav-prev" type="button" aria-label="חזרה"></button>
@@ -293,7 +304,7 @@
 </section>
 
 <!-- ================= SCREEN 11 — שאלה 6: השפעת טיסה שביעית על המדדים (שקפים 25-26) ================= -->
-<section class="screen" data-screen="11" data-sid="q6" data-type="question" data-kind="dnd" data-weight="14.2857" data-step="6" tabindex="-1">
+<section class="screen" data-screen="11" data-sid="q6" data-type="question" data-kind="dnd" data-weight="14.2857" data-step="6" data-dnd-final="compare" tabindex="-1">
   <img class="screen-bg" src="assets/images/bg-question.jpg" alt="">
   <div class="q-overlay"></div>
   <div class="q-panel"></div>
@@ -347,6 +358,12 @@
       <p>הממוצע קטן: מספר התמונות הנמוך בטיסה השביעית הוריד את הממוצע.</p>
       <p>החציון נשאר ללא שינוי: לאחר סידור הנתונים מהקטן לגדול, הערך האמצעי עדיין 130.</p>
       <p>הטווח גדל: ההפרש בין מספר התמונות הגדול ביותר לקטן ביותר גדל.</p></div>
+    <div data-fb="partial"><p class="fb-t">נכון חלקית</p>
+      <p>הטיסה השביעית השפיעה על המדדים באופן שונה:</p>
+      <p>השכיח נשאר ללא שינוי: 130 הוא עדיין מספר התמונות שמופיע הכי הרבה פעמים.</p>
+      <p>הממוצע קטן: מספר התמונות הנמוך בטיסה השביעית הוריד את הממוצע.</p>
+      <p>החציון נשאר ללא שינוי: לאחר סידור הנתונים מהקטן לגדול, הערך האמצעי עדיין 130.</p>
+      <p>הטווח גדל: ההפרש בין מספר התמונות הגדול ביותר לקטן ביותר גדל.</p></div>
   </div>
   <button class="nav-btn nav-prev" type="button" aria-label="חזרה"></button>
   <button class="nav-btn nav-next hidden" type="button" aria-label="המשך"></button>
@@ -355,7 +372,9 @@
 <!-- ================= SCREEN 12 — הרחפן שובץ: מתחמי הפארק (שקף 27) ================= -->
 <section class="screen" data-screen="12" data-sid="park-lights" data-type="explain" tabindex="-1">
   <img class="screen-bg" src="assets/images/park-lights-bg.jpg" alt="">
-  <img class="fx fx-lights" src="assets/images/park-lights-lights.png" alt="">
+  <div class="fx fx-lightsclip" aria-hidden="true">
+    <video class="fx fx-lightsvid" muted loop playsinline preload="auto" disablepictureinpicture poster="assets/images/park-lights-clip-poster.jpg" src="assets/videos/park-lights.mp4"></video>
+  </div>
   <img class="fx fx-erez" src="assets/images/park-lights-erez.png" alt="">
   <img class="fx fx-lihi" src="assets/images/park-lights-lihi.png" alt="">
   <div class="narration-banner"><p>התקלה ברחפן מדגם "נץ" תוקנה. הוא השלים בהצלחה את סדרת טיסות המבחן ושובץ למתחם המתאים לו בפארק. גם שאר דגמי הרחפנים עברו סדרת טיסות מבחן, ועכשיו הגיע הזמן לשבץ אותם במתחמי הפארק.</p></div>
@@ -364,11 +383,11 @@
 </section>
 
 <!-- ================= SCREEN 13 — מרכז הבקרה (שקף 28) ================= -->
-<section class="screen" data-screen="13" data-sid="control-center" data-type="applet" data-arrow-after="15" tabindex="-1">
+<section class="screen" data-screen="13" data-sid="control-center" data-type="applet" data-arrow-trigger="done" tabindex="-1">
   <img class="screen-bg" src="assets/images/control-center-bg.jpg" alt="">
   <div class="narration-banner"><p>לחצו על מסך המחשב, קחו שליטה על מרכז הבקרה ועזרו לארז וליהי להשלים את המשימה.</p></div>
-  <!-- The screen grows to full screen on click; the arrow must wait for the task to be completed in the applet (slide 28 notes). -->
-  <div class="applet-frame monitor-frame" data-pending-asset="applet: מרכז הבקרה (slide 28) — click grows it to full screen; continue only after the task is completed"></div>
+  <!-- A click on the monitor grows it to full screen (HOOKS['control-center']); the arrow waits for APPLET_DONE from the applet (slide 28 notes). -->
+  <div class="applet-frame monitor-frame"><iframe src="assets/app/control-center.html" title="יישומון: מרכז הבקרה של הפארק" scrolling="no"></iframe><button class="monitor-open" type="button" aria-label="לחצו כדי להגדיל את מסך מרכז הבקרה"></button></div>
   <button class="nav-btn nav-prev" type="button" aria-label="חזרה"></button>
   <button class="nav-btn nav-next hidden" type="button" aria-label="המשך"></button>
 </section>
@@ -406,14 +425,14 @@
   <div class="q-panel"></div>
   <button class="help-btn" type="button" data-popup="help-q7">עזרה</button>
   <div class="popup-src" id="help-q7" hidden>
-    <p>חשבו איזה מדד סטטיסטי מחלק את הנתונים בדיוק לשני חצאים, כך שנוכל לדעת בוודאות מה קורה ב-50% "העליונים" של הטיסות?</p>
+    <p>חשבו איזה מדד סטטיסטי מחלק את הנתונים בדיוק לשני חצאים, כך שנוכל לדעת בוודאות מה קורה <span class="nb">ב-<span class="ltr">50%</span></span> "העליונים" של הטיסות?</p>
     <p>האם זה הממוצע, הטווח או החציון?</p>
   </div>
   <div class="q-card">
     <div class="q-text">
       <p class="q-body">7. הביצועים של הרחפן מדגם "נץ" הרשימו גם מנהלי פארקים אחרים.</p>
       <p class="q-body">מנהל הפארק בעיר שלכם ביקש לבדוק את נתוני טיסות המבחן של הרחפן "נץ", ואמר:</p>
-      <p class="q-body">"אני מוכן לרכוש את הרחפן רק אם <strong>ברוב מוחלט</strong> של הטיסות (יותר מ-50%) הוא צילם <strong>לפחות 125 תמונות."</strong></p>
+      <p class="q-body">"אני מוכן לרכוש את הרחפן רק אם <strong>ברוב מוחלט</strong> של הטיסות (יותר <span class="nb">מ-<span class="ltr">50%</span></span>) הוא צילם <strong>לפחות 125 תמונות ."</strong></p>
       <p class="q-instruction">נזכיר שב-6 טיסות המבחן צילם הרחפן "נץ" 145, 110, 125, 130, 130, 140 תמונות.</p>
       <p class="q-instruction">איזה מההיגדים הוא הנכון ביותר?</p>
       <div class="q-answers" role="radiogroup" aria-label="אפשרויות תשובה">
@@ -471,6 +490,13 @@
   <div class="fb-body" id="fb-body"></div>
 </div>
 
+<!-- The end of the lomda: the finish popup's X (or Escape) shows this dark screen, which sends the learner back to the
+     Moodle (script.js: showReturnScreen). The wording is the approved house text; "העמוד הבא" must be the label of the
+     Moodle quiz's next-page button. -->
+<div id="final-return" role="dialog" aria-modal="true" aria-labelledby="final-return-text" tabindex="-1" hidden>
+  <p id="final-return-text">כעת חזרו אל המודל,<br>לחצו על הכפתור "העמוד הבא"<br>וענו על השאלות.</p>
+</div>
+
 <div id="img-zoom-modal" role="dialog" aria-modal="true" aria-label="תצוגה מוגדלת" tabindex="-1">
   <div class="img-zoom-panel">
     <button class="img-zoom-close" type="button" data-zoom-close aria-label="סגירה">✕</button>
@@ -489,6 +515,9 @@
   <span data-key="close">סגירה</span>
   <span data-key="dnd-picked">נבחר. בחרו מקום ריק והקישו Enter.</span>
   <span data-key="dnd-placed">הוצב במקום.</span>
+  <span data-key="dnd-right">נכון</span>
+  <span data-key="dnd-wrong">לא נכון</span>
+  <span data-key="dnd-correct-is">התשובה הנכונה:</span>
   <span data-key="sound-mute">השתקת הצליל</span>
   <span data-key="sound-unmute">הפעלת הצליל</span>
 </div>

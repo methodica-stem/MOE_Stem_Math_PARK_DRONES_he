@@ -32,6 +32,9 @@
   --paper: #F3EBD8;              /* a table's paper card */
   --paper-line: #4E5A3E;         /* table lines */
   --table-head: #D9DCC7;
+  --mark-size: 22px;             /* ✓ / ✕ drawn inside a 28 px radio or checkbox (shapes, see .q-opt.correct) */
+  --mark-check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 12.5l5 5L20 6.5' fill='none' stroke='%23000' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  --mark-x: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 5l14 14M19 5L5 19' fill='none' stroke='%23000' stroke-width='3.4' stroke-linecap='round'/%3E%3C/svg%3E");
   --opt-correct: #2F7D32;
   --opt-wrong: #ca433d;          /* only on the final reveal */
   --chip-bg: #0368E3;
@@ -149,11 +152,11 @@ button, input, select, textarea { font-family: inherit; }
 
 /* Narration banner: the design's translucent card, flush to the top-right corner. */
 .narration-banner {
-  position: absolute; top: 0; right: 0; width: 925px;
-  padding: 40px 54px 40px 60px;
+  position: absolute; top: 0; right: 0; width: 1110px;
+  padding: 44px 60px 44px 68px;
   background: rgba(238,243,230,.9);
-  border-radius: 0 0 0 56px;
-  font-size: 33.3px; font-weight: 600; line-height: 1.5; text-align: right; color: #1A1A1A;
+  border-radius: 0 0 0 64px;
+  font-size: var(--text-size); font-weight: 600; line-height: 1.5; text-align: right; color: #1A1A1A;
   z-index: 6;
 }
 .narration-banner p { margin: 0; }
@@ -413,10 +416,26 @@ button, input, select, textarea { font-family: inherit; }
 .q-opt.selected .q-mark::after { content: ''; position: absolute; inset: 5px; border-radius: inherit; background: var(--subject-500); }
 .q-opt.correct { color: var(--opt-correct); }
 .q-opt.correct .q-mark { border-color: var(--opt-correct); }
-.q-opt.correct .q-mark::after { content: '✓'; inset: auto; top: -10px; right: -6px; background: none; color: var(--opt-correct); font-size: 32px; font-weight: 800; }
 .q-opt.wrong { color: var(--opt-wrong); }
 .q-opt.wrong .q-mark { border-color: var(--opt-wrong); }
-.q-opt.wrong .q-mark::after { content: '✕'; inset: auto; top: -8px; right: -2px; background: none; color: var(--opt-wrong); font-size: 26px; font-weight: 800; }
+/* ✓ and ✕ ON THE FINAL REVEAL — always centred on the control, by geometry:
+   - drawn as shapes (a mask), never as text glyphs: a glyph's position depends on the font
+     that happens to supply it, a shape is exactly where the CSS puts it;
+   - centred with left/top 50% + translate, never nudged with top:-10px / right:-6px: a nudge
+     is right for one control size and one font, and wrong after any change;
+   - inside the control, so the mark never moves when the layout does (RTL included).
+   The check and the cross share one box (--mark-size), so they line up with each other too.
+   engine_test.py measures this in a browser; do not "fix" a mark by offsetting it. */
+.q-opt.correct .q-mark::after, .q-opt.wrong .q-mark::after {
+  content: ''; position: absolute; inset: auto; left: 50%; top: 50%;
+  width: var(--mark-size); height: var(--mark-size); transform: translate(-50%, -50%);
+  border-radius: 0; background: var(--opt-correct);
+  -webkit-mask: var(--mark-check) center / contain no-repeat; mask: var(--mark-check) center / contain no-repeat;
+}
+.q-opt.wrong .q-mark::after {
+  background: var(--opt-wrong);
+  -webkit-mask-image: var(--mark-x); mask-image: var(--mark-x);
+}
 
 /* Drag and drop */
 .dnd-bank { display: flex; flex-wrap: wrap; gap: 14px; min-height: 64px; margin: 10px 0 26px; }
@@ -546,10 +565,16 @@ button, input, select, textarea { font-family: inherit; }
 .q-tr.q-opt.selected { background: rgba(41,159,212,.2); }
 .q-tr.q-opt.correct { background: rgba(68,168,75,.22); }
 .q-tr.q-opt.wrong { background: rgba(202,67,61,.2); }
-.q-tr.q-opt.correct::after {
-  content: '✓'; position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
-  color: var(--opt-correct); font-size: 40px; font-weight: 800;
+/* The mark sits at the row's start edge (right, in RTL), centred on the row's height; the first
+   cell keeps clear of it. Same shapes and the same centring rule as the radio marks. */
+.q-tr.q-opt > span:first-child { padding-inline-start: 64px; }
+.q-tr.q-opt.correct::after, .q-tr.q-opt.wrong::after {
+  content: ''; position: absolute; right: 12px; top: 50%;
+  width: 40px; height: 40px; transform: translateY(-50%);
+  background: var(--opt-correct);
+  -webkit-mask: var(--mark-check) center / contain no-repeat; mask: var(--mark-check) center / contain no-repeat;
 }
+.q-tr.q-opt.wrong::after { background: var(--opt-wrong); -webkit-mask-image: var(--mark-x); mask-image: var(--mark-x); }
 .q-tr.q-opt:focus-visible { outline: var(--focus); outline-offset: -3px; }
 
 /* ---- Question parts (.q-part rows inside one question section) ----
@@ -615,75 +640,196 @@ button, input, select, textarea { font-family: inherit; }
 /* Layers that are animated or placed from the PSD (stage pixels). Nothing here flashes: the slowest
    change is the fastest one (0.4 s fade), and prefers-reduced-motion switches them all off. */
 .fx { position: absolute; pointer-events: none; user-select: none; }
-.screen.active .fx-lights { animation: lightsPulse 3.6s ease-in-out infinite alternate; }
-@keyframes lightsPulse { from { opacity: .55; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .screen.active .fx, .screen.active .phone, .screen.active .flash, .screen.active .screen-bg { animation: none !important; } }
 
 /* ---- 1 · intro ---- */
-[data-sid="intro"] .narration-banner { width: 1045px; }
-[data-sid="intro"] .fx-lights { left: 0; top: 40px; width: 1920px; height: 1021px; mix-blend-mode: screen; }
+[data-sid="intro"] .narration-banner { width: 1240px; }
+/* The opening picture "breathes": the designer's lights layer is split by region
+   (tools/split_intro_lights.py) and every region fades a brighter copy of itself in and out over
+   the artwork, each on its own timing. The artwork is the normal state (opacity 0 = as drawn).
+   Opacity is all that changes (no blend mode, no filter) and each copy is cropped to its own area,
+   so it stays light on a school laptop. Nothing flashes; each loop runs forward and back, so there
+   is no jump at the seam. Reduced motion: the generic .fx rule above stops them, picture as drawn. */
+[data-sid="intro"] .fx-lt { opacity: 0; }
+.fx-lt-sky        { left: 706px; top: 40px; width: 833px; height: 156px; }
+.fx-lt-stage      { left: 869px; top: 182px; width: 532px; height: 319px; }
+.fx-lt-screens    { left: 1543px; top: 249px; width: 377px; height: 812px; }
+.fx-lt-cool       { left: 0px; top: 185px; width: 1908px; height: 822px; }
+.fx-lt-pink       { left: 0px; top: 248px; width: 1827px; height: 813px; }
+.fx-lt-warm1      { left: 0px; top: 262px; width: 1841px; height: 799px; }
+.fx-lt-warm2      { left: 22px; top: 253px; width: 1882px; height: 793px; }
+.fx-lt-warm3      { left: 0px; top: 297px; width: 1888px; height: 759px; }
+.screen.active .fx-lt { animation-timing-function: ease-in-out; animation-iteration-count: infinite; animation-direction: alternate; }
+.screen.active .fx-lt-sky     { animation-name: ltSky;    animation-duration: 9s;   animation-delay: -2s; }
+.screen.active .fx-lt-stage   { animation-name: ltStage;  animation-duration: 3.4s; animation-delay: -1s; }
+.screen.active .fx-lt-screens { animation-name: ltScreen; animation-duration: 5.2s; animation-delay: -3s; }
+.screen.active .fx-lt-cool    { animation-name: ltSoft;   animation-duration: 4.8s; animation-delay: -1.5s; }
+.screen.active .fx-lt-pink    { animation-name: ltSoft;   animation-duration: 3.9s; animation-delay: -3.2s; }
+.screen.active .fx-lt-warm1   { animation-name: ltWarm;   animation-duration: 2.6s; animation-delay: -0.4s; }
+.screen.active .fx-lt-warm2   { animation-name: ltWarm;   animation-duration: 3.3s; animation-delay: -2.1s; }
+.screen.active .fx-lt-warm3   { animation-name: ltWarm;   animation-duration: 4.1s; animation-delay: -1.2s; }
+@keyframes ltSky    { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ltStage  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ltScreen { 0% { opacity: 0; } 40% { opacity: .8; } 55% { opacity: .5; } 100% { opacity: 1; } }
+@keyframes ltSoft   { from { opacity: 0; } to { opacity: .85; } }
+@keyframes ltWarm   { from { opacity: 0; } to { opacity: 1; } }
 
 /* ---- 2 · video-test ---- */
-[data-sid="video-test"] .narration-banner { width: 925px; }
+[data-sid="video-test"] .narration-banner { width: 1730px; }   /* two rows only: the man's face is just below it */
 
 /* ---- 3 · q1 ---- */
 [data-sid="q1"] .q-text { width: 970px; }
-[data-sid="q1"] .q-applet { left: 150px; top: 185px; width: 612px; height: 659px; border-radius: 0; box-shadow: none; }
+/* The applet fills the free left side: from the top of the question text down past the forward arrow (developer's request:
+   the design's 612 x 659 frame was too small to read). At this width the applet shows at its own size (no scaling). */
+[data-sid="q1"] .q-applet { left: 76px; top: 162px; width: 715px; height: 842px; border-radius: 0; box-shadow: none; }
 [data-sid="q1"] .btn-check { left: 1539px; }
-#feedback-popup.fb-q1 { left: 800px; top: 610px; width: 970px; }
-#feedback-popup.fb-q1.retry { width: 700px; }
+/* The explanation box runs down to the foot of the white panel (610 + 440 = 1050), its header sits higher and the
+   text is a little larger (38 / 50 px instead of 34 / 46). The short retry box keeps its own height. */
+#feedback-popup.fb-q1 { left: 800px; top: 610px; width: 970px; min-height: 440px; box-sizing: border-box; padding-top: 26px; }
+#feedback-popup.fb-q1.show:not(.retry) { display: flex; flex-direction: column; justify-content: center; }   /* text centred top to bottom */
+#feedback-popup.fb-q1 .fb-title { font-size: 50px; }
+#feedback-popup.fb-q1 .fb-body p, #feedback-popup.fb-q1 .fb-body li { font-size: 38px; }
+#feedback-popup.fb-q1.retry { width: 700px; min-height: 0; padding-top: 30px; }
 /* ---- 4 · video-typo ---- */
 /* ---- 5 · q2 ---- */
-[data-sid="q2"] .q-text { width: 960px; }
-[data-sid="q2"] .q-figure { position: absolute; left: 160px; top: 150px; width: 468px; height: 479px; }
-#feedback-popup.fb-q2 { left: 150px; top: 650px; width: 640px; }
+/* The text moves to the right edge (in line with the progress pills) to give the picture room (was 468 px wide). */
+[data-sid="q2"] .q-text { right: 90px; width: 1120px; }
+[data-sid="q2"] .q-figure { position: absolute; left: 70px; top: 165px; width: 620px; height: 634px; }
+/* The explanation sits below both the picture and the answers, as wide as it can be without covering the two arrows
+   (x 280 to 1765, y 812 to the foot of the white panel at 1050), text centred, 42 / 50 px (was 34 / 46): each
+   paragraph fits on one line. The short retry box is a little smaller. */
+#feedback-popup.fb-q2 { left: 280px; top: 812px; width: 1485px; min-height: 238px; box-sizing: border-box; padding: 16px 36px; }
+#feedback-popup.fb-q2.show:not(.retry) { display: flex; flex-direction: column; justify-content: center; }
+#feedback-popup.fb-q2 .fb-title { font-size: 50px; }
+#feedback-popup.fb-q2 .fb-body p, #feedback-popup.fb-q2 .fb-body li { font-size: 40px; }
+#feedback-popup.fb-q2.retry { left: 710px; width: 1000px; min-height: 0; padding: 24px 40px 20px; }
+#feedback-popup.fb-q2.retry .fb-title { font-size: 50px; }
+#feedback-popup.fb-q2.retry .fb-body p { font-size: 42px; }
 /* ---- 6 · q3 ---- */
-[data-sid="q3"] .q-text { width: 1070px; }
-[data-sid="q3"] .q-applet { left: 150px; top: 150px; width: 504px; height: 549px; border-radius: 0; box-shadow: none; }
-#feedback-popup.fb-q3 { left: 700px; top: 600px; width: 1070px; }
+/* Same layout as screen 3: the applet fills the left side at its own size, the text sits at the right edge. */
+[data-sid="q3"] .q-text { right: 90px; width: 1000px; }
+[data-sid="q3"] .q-applet { left: 76px; top: 162px; width: 715px; height: 842px; border-radius: 0; box-shadow: none; }
+/* Long explanation (7 rows): it starts right under the answers (they end at y 637) and runs to the foot of the white panel
+   (650 + 400 = 1050); with this much text, 36 / 46 px is the most that fits. */
+/* The check button sits up by the answers (it was over the applet), clear of the "try again" box that opens below it (from y 650). */
+[data-sid="q3"] .btn-check { left: 900px; top: 498px; }
+#feedback-popup.fb-q3 { left: 830px; top: 650px; width: 935px; min-height: 400px; box-sizing: border-box; padding: 12px 40px; }
+#feedback-popup.fb-q3.show:not(.retry) { display: flex; flex-direction: column; justify-content: center; }
+#feedback-popup.fb-q3 .fb-title { font-size: 46px; }
+#feedback-popup.fb-q3 .fb-body p { font-size: 36px; margin-bottom: 2px; }
+#feedback-popup.fb-q3.retry { min-height: 0; padding: 24px 40px 20px; width: 800px; }
+#feedback-popup.fb-q3.retry .fb-title { font-size: 50px; }
+#feedback-popup.fb-q3.retry .fb-body p { font-size: 42px; }
 /* ---- 7 · next-test ---- */
-[data-sid="next-test"] .narration-banner { width: 850px; }
+[data-sid="next-test"] .narration-banner { width: 910px; }
 /* ---- 8 · q4 ---- */
-[data-sid="q4"] .q-figure { position: absolute; left: 160px; top: 424px; width: 484px; height: 634px; }
-[data-sid="q4"] .btn-check { left: 1539px; }
-#feedback-popup.fb-q4 { left: 910px; top: 770px; width: 860px; }
-#feedback-popup.fb-q4.retry { width: 590px; }
+/* Lihi is much larger (was 484 x 634): she still stands on the foot of the white panel (bottom 1058); the text sits at the right edge. */
+[data-sid="q4"] .q-text { right: 90px; width: 1000px; }
+[data-sid="q4"] .q-figure { position: absolute; left: 70px; top: 158px; width: 687px; height: 900px; }
+[data-sid="q4"] .btn-check { left: 1539px; top: 905px; }   /* below the "try again" box (it ends at y 888); found by layout_check.py */
+/* Short explanation: a panel that hugs its text (each sentence on one line, 42 / 50 px: a little larger than the question text,
+   not much), right edge in line with the other screens (1765), just under the answers (they end at y 691). */
+#feedback-popup.fb-q4 { left: auto; right: 155px; top: 710px; width: fit-content; max-width: 935px; box-sizing: border-box; padding: 24px 44px 18px; }
+#feedback-popup.fb-q4 .fb-title { font-size: 50px; }
+#feedback-popup.fb-q4 .fb-body p { font-size: 42px; }   /* no nowrap: the panel is as wide as the longest sentence (max 935), so the Hebrew stays on one line and a longer Arabic one wraps */
+#feedback-popup.fb-q4.retry { width: 800px; min-height: 0; padding: 24px 40px 20px; }
+#feedback-popup.fb-q4.retry .fb-title { font-size: 50px; }
+#feedback-popup.fb-q4.retry .fb-body p { font-size: 42px; }
 /* ---- 9 · q5 ---- */
-[data-sid="q5"] .q-text { width: 1020px; }
-[data-sid="q5"] .q-figure { position: absolute; left: 150px; top: 265px; width: 552px; height: 368px; }
-#feedback-popup.fb-q5 { left: 750px; top: 575px; width: 1020px; }
-/* ---- 10 · test-six ---- */
-[data-sid="test-six"] .narration-banner { width: 1015px; }
-[data-sid="test-six"] .fx-view { left: 118px; top: 20px; width: 1685px; height: 959px; }
+/* Bigger drone picture (was 552 x 368); the text sits at the right edge. */
+[data-sid="q5"] .q-text { right: 90px; width: 1000px; }
+[data-sid="q5"] .q-figure { position: absolute; left: 70px; top: 230px; width: 720px; height: 480px; }
+/* The explanation (7 rows with the equation) starts right under the answer box (it ends at y 521) and runs to the foot of
+   the white panel (538 + 512 = 1050); 42 / 52 px is the most that fits without wrapping a row (was 34 / 46). */
+#feedback-popup.fb-q5 { left: 830px; top: 538px; width: 935px; min-height: 512px; box-sizing: border-box; padding: 12px 40px; }
+#feedback-popup.fb-q5.show:not(.retry) { display: flex; flex-direction: column; justify-content: center; }
+#feedback-popup.fb-q5 .fb-title { font-size: 52px; }
+#feedback-popup.fb-q5 .fb-body p { font-size: 42px; }
+#feedback-popup.fb-q5.retry { min-height: 0; width: 800px; padding: 24px 40px 20px; }
+#feedback-popup.fb-q5.retry .fb-title { font-size: 50px; }
+#feedback-popup.fb-q5.retry .fb-body p { font-size: 42px; }
+/* ---- 10 · test-six ----
+   The drone's camera view is a generated clip (assets/videos/test-six-drone.mp4: silent, 7.4 s, its end
+   is faded into its start so the loop has no jump), muted, looping, no controls. It fills the whole white
+   screen of the monitor picture (118,18 to 1803,980), under the HUD; the poster (its first frame) shows
+   until it plays and under reduced motion. The notch at the bottom left keeps the clip off the few pixels
+   of the real sticky note that show below the HUD's edge. */
+[data-sid="test-six"] .narration-banner { width: 1060px; }
+[data-sid="test-six"] .fx-viewclip { left: 118px; top: 18px; width: 1685px; height: 962px; overflow: hidden; background: #05060a;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 270px 100%, 270px 957px, 40px 957px, 40px 100%, 0 100%); }
+[data-sid="test-six"] .fx-view { left: 0; top: 0; width: 1685px; height: 962px; object-fit: cover; }
 [data-sid="test-six"] .fx-hud { left: 120px; top: 22px; width: 1681px; height: 954px; }
-.screen.active[data-sid="test-six"] .fx-view { animation: slowPan 14s ease-in-out infinite alternate; }
-@keyframes slowPan { from { transform: scale(1) translate(0, 0); } to { transform: scale(1.05) translate(-12px, 6px); } }
 [data-sid="test-six"] { overflow: hidden; }
 /* ---- 11 · q6 ---- */
-[data-sid="q6"] .q-text { width: 980px; }
-[data-sid="q6"] .q-rows { position: absolute; right: 150px; top: 670px; width: 980px; }
+/* Bigger cards and drop targets (cards 325 x 96 px, was 290 x 80); the stacks keep the left side, the text and the rows the right. */
+[data-sid="q6"] .q-text { width: 1000px; }
+[data-sid="q6"] .q-rows { position: absolute; right: 150px; top: 652px; width: 1000px; }
 [data-sid="q6"] .metric-row { display: flex; align-items: center; gap: 24px; margin: 0 0 12px; font-size: var(--text-size); font-weight: 700; }
-[data-sid="q6"] .metric-row .dnd-slot { margin: 0; }
-[data-sid="q6"] .dnd-bank { position: absolute; left: 150px; top: 150px; width: 640px; display: grid; grid-template-columns: 300px 300px; grid-auto-rows: 120px; gap: 20px 30px; margin: 0; min-height: 0; }
-[data-sid="q6"] .dnd-chip { width: 290px; }
+[data-sid="q6"] .metric-row .dnd-slot { margin: 0; box-sizing: border-box; width: 330px; min-width: 330px; height: 88px; min-height: 88px; padding: 0; border-radius: 22px; }
+[data-sid="q6"] .dnd-chip { min-width: 325px; min-height: 84px; font-size: 40px; }
+[data-sid="q6"] .dnd-bank { position: absolute; left: 70px; top: 160px; width: 700px; display: grid; grid-template-columns: 335px 335px; grid-auto-rows: 130px; gap: 20px 30px; margin: 0; min-height: 0; }
+[data-sid="q6"] .dnd-chip { width: 325px; }
 [data-sid="q6"] .dnd-chip[data-chip^="up"] { grid-area: 1 / 2; }
 [data-sid="q6"] .dnd-chip[data-chip^="dn"] { grid-area: 1 / 1; }
 [data-sid="q6"] .dnd-chip[data-chip^="eq"] { grid-area: 2 / 1; }
 [data-sid="q6"] .dnd-chip[data-chip$="1"] { transform: translate(-18px, -18px); }
 [data-sid="q6"] .dnd-chip[data-chip$="2"] { transform: translate(-12px, -12px); }
 [data-sid="q6"] .dnd-chip[data-chip$="3"] { transform: translate(-6px, -6px); }
+/* Stack order: the card at the front (no offset) is on top and whole; each one behind it peeks out up and to the left.
+   (Without a z-index the offset cards are painted over the plain one, which made the front card look see-through.) */
+[data-sid="q6"] .dnd-chip[data-chip$="1"] { z-index: 1; }
+[data-sid="q6"] .dnd-chip[data-chip$="2"] { z-index: 2; }
+[data-sid="q6"] .dnd-chip[data-chip$="3"] { z-index: 3; }
+[data-sid="q6"] .dnd-chip[data-chip$="4"] { z-index: 4; }
 [data-sid="q6"] .dnd-chip { align-self: end; justify-self: end; }
-#feedback-popup.fb-q6 { left: 119px; top: 420px; width: 640px; }
+/* The long explanation takes the whole left side (x 58-758, y 160-925, above the back arrow) and covers the card stacks, which are
+   locked by then; 40 / 50 px is the most that fits (was 34 / 46). The short retry box sits below the stacks, which are still needed. */
+#feedback-popup.fb-q6 { left: 58px; top: 160px; width: 700px; min-height: 765px; box-sizing: border-box; padding: 28px 36px; }
+#feedback-popup.fb-q6.show:not(.retry) { display: flex; flex-direction: column; justify-content: center; }
+#feedback-popup.fb-q6 .fb-title { font-size: 50px; }
+#feedback-popup.fb-q6 .fb-body p { font-size: 40px; }
+#feedback-popup.fb-q6.retry { top: 470px; min-height: 0; padding: 24px 36px 20px; }
+#feedback-popup.fb-q6.retry .fb-body p { font-size: 40px; }
+[data-sid="q6"] .dnd-slot .dnd-chip { transform: none; }   /* a card dropped on a row sits squarely in it, not offset like a card in the stack */
+/* A card in a row fills the row exactly, so an outline drawn on the card IS the shape of the box (no gap, nothing bigger). */
+[data-sid="q6"] .dnd-slot .dnd-chip { width: 100%; height: 100%; min-width: 0; min-height: 0; padding: 4px 10px; }
+/* Final state (data-dnd-final="compare"): the learner's own cards stay, outlined thick in green (right) or red (wrong), each followed
+   by a round check or cross; a wrong row also shows the right card in a second column. The slot's own border is off. */
+[data-sid="q6"] .dnd-slot.correct, [data-sid="q6"] .dnd-slot.wrong { border: 2px solid transparent; }
+[data-sid="q6"] .dnd-slot.correct .dnd-chip { border: 8px solid var(--opt-correct); }
+[data-sid="q6"] .dnd-slot.wrong .dnd-chip { border: 8px solid var(--opt-wrong); }
+[data-sid="q6"] .dnd-mark { position: relative; width: 60px; height: 60px; border-radius: 50%; justify-self: center; }
+[data-sid="q6"] .dnd-mark.ok { background: var(--opt-correct); }
+[data-sid="q6"] .dnd-mark.no { background: var(--opt-wrong); }
+[data-sid="q6"] .dnd-mark::after { content: ''; position: absolute; inset: 15px; background: #fff;
+  -webkit-mask: var(--mark-check) center / contain no-repeat; mask: var(--mark-check) center / contain no-repeat; }
+[data-sid="q6"] .dnd-mark.no::after { -webkit-mask-image: var(--mark-x); mask-image: var(--mark-x); }
+[data-sid="q6"] .dnd-fix { box-sizing: border-box; width: 330px; height: 88px; display: flex; align-items: center; justify-content: center;
+  padding: 4px 10px; border: 8px solid var(--opt-correct); border-radius: 22px; color: #1A1A1A; font-size: 40px; font-weight: 700;
+  background: linear-gradient(180deg, #DCE5F0 0%, #B3C1D5 45%, #8E9FB9 100%);
+  box-shadow: inset 0 3px 3px rgba(255,255,255,.75), 0 3px 5px rgba(40,60,90,.35); }
 /* ---- 12 · park-lights ---- */
-[data-sid="park-lights"] .narration-banner { width: 803px; }
-[data-sid="park-lights"] .fx-lights { left: 268px; top: 219px; width: 1630px; height: 481px; mix-blend-mode: screen; }
+[data-sid="park-lights"] .narration-banner { width: 1220px; }
+/* the clip is the whole 1920x1080 frame, shown only through the window glass (the monitor, sill and desk stay as in the picture) */
+[data-sid="park-lights"] .fx-lightsclip { left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden;
+  clip-path: polygon(268px 0, 1920px 0, 1920px 730px, 362px 672px, 362px 498px, 268px 498px); }
+[data-sid="park-lights"] .fx-lightsvid { left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; }
 [data-sid="park-lights"] .fx-erez { left: 0; top: 187px; width: 850px; height: 893px; }
 [data-sid="park-lights"] .fx-lihi { left: 1067px; top: 354px; width: 696px; height: 726px; }
 /* ---- 13 · control-center ---- */
-[data-sid="control-center"] .narration-banner { width: 755px; }
+[data-sid="control-center"] .narration-banner { width: 905px; }
 [data-sid="control-center"] .monitor-frame { left: 120px; top: 29px; width: 1681px; height: 942px; border-radius: 0; box-shadow: none; }
+/* The applet is laid out for 2/3 of its frame and shown 1.5 times larger (text and buttons were too small to read). A click on the
+   monitor grows the frame to the whole stage (above the banner, below the arrows), as the storyboard asks. */
+[data-sid="control-center"] .monitor-frame { transition: left .5s ease, top .5s ease, width .5s ease, height .5s ease; }
+[data-sid="control-center"] .monitor-frame iframe { position: absolute; left: 0; top: 0; width: 66.6667%; height: 66.6667%; transform: scale(1.5); transform-origin: 0 0; }
+[data-sid="control-center"] .monitor-open { position: absolute; inset: 0; z-index: 2; padding: 0; border: 0; background: transparent; cursor: pointer; }
+[data-sid="control-center"] .monitor-open:focus-visible { outline: 6px solid var(--accent); outline-offset: -6px; }
+[data-sid="control-center"].applet-full .monitor-open { display: none; }
+[data-sid="control-center"].applet-full .monitor-frame { left: 0; top: 0; width: 1920px; height: 1080px; z-index: 10; }
+@media (prefers-reduced-motion: reduce) { [data-sid="control-center"] .monitor-frame { transition: none; } }
 /* ---- 14 · party ---- */
-[data-sid="party"] .narration-banner { width: 892px; }
+[data-sid="party"] .narration-banner { width: 910px; }
 [data-sid="party"] .phone { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; pointer-events: none; }
 [data-sid="party"] .phone > * { position: absolute; margin: 0; }
 [data-sid="party"] .phone-screen { left: 1229px; top: 250px; width: 389px; height: 819px; }
@@ -695,22 +841,35 @@ button, input, select, textarea { font-family: inherit; }
 [data-sid="party"] .post-msg p { margin: 0; }
 [data-sid="party"] .post-photo { left: 1228px; top: 563px; width: 384px; height: 290px; }
 [data-sid="party"] .post-likes { right: 332px; top: 872px; font-size: 28px; font-weight: 600; color: #1A1A1A; }
-[data-sid="party"] .flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; z-index: 8; }
+[data-sid="party"] .flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; z-index: 10; }
 @keyframes flashOnce { 0% { opacity: 0; } 25% { opacity: .85; } 100% { opacity: 0; } }
 @keyframes phoneRise { from { transform: translateY(110%); opacity: 0; } to { transform: none; opacity: 1; } }
 /* ---- 15 · q7 ---- */
-[data-sid="q7"] .q-text { width: 980px; }
-#feedback-popup.fb-q7 { left: 119px; top: 175px; width: 620px; }
+[data-sid="q7"] .q-text { right: 150px; width: 1030px; }
+/* No picture here, so the explanation takes the whole free left side (x 70-730, y 160-925: it stops above the back arrow);
+   42 / 52 px is the most that fits (was 34 / 46). The text column keeps clear of the forward arrow (right edge 1770). */
+#feedback-popup.fb-q7 { left: 70px; top: 160px; width: 660px; min-height: 765px; box-sizing: border-box; padding: 28px 36px; }
+#feedback-popup.fb-q7.show:not(.retry) { display: flex; flex-direction: column; justify-content: center; }
+#feedback-popup.fb-q7 .fb-title { font-size: 52px; }
+#feedback-popup.fb-q7 .fb-body p { font-size: 42px; }
+#feedback-popup.fb-q7.retry { min-height: 0; padding: 24px 36px 20px; }
+#feedback-popup.fb-q7.retry .fb-title { font-size: 50px; }
+#feedback-popup.fb-q7.retry .fb-body p { font-size: 42px; }
 /* ---- 16 · finish ---- */
-[data-sid="finish"] .narration-banner { width: 736px; }
-[data-sid="finish"] .fx-drone { left: 600px; top: 195px; width: 541px; height: 272px; }
+[data-sid="finish"] .narration-banner { width: 1010px; }
+[data-sid="finish"] .fx-drone { left: 600px; top: 255px; width: 541px; height: 272px; }   /* 60 px lower than the design so its rotors clear the narration bubble */
 .screen.active[data-sid="finish"] .fx-drone { animation: droneFloat 5s ease-in-out infinite alternate; }
 @keyframes droneFloat { from { transform: translate(-30px, 8px) rotate(-1deg); } to { transform: translate(30px, -10px) rotate(1deg); } }
 [data-sid="finish"] .finish-btn { left: 283px; top: 855px; width: 187px; height: 115px; padding: 0 0 6px; background-image: url('assets/images/ui-btn-check.png'); background-size: 100% 100%; font-size: 42px; }
 .eq-line { text-align: right; }
 [data-sid="q5"] .eq-line { text-align: center; }
-[data-sid="q6"] .metric-row { display: grid; grid-template-columns: 230px 298px; justify-content: start; }
+[data-sid="q6"] .metric-row { display: grid; grid-template-columns: 190px 60px 330px 330px; column-gap: 14px; justify-content: start; }
+/* columns, from the label: check or cross | the learner's card | the right card (only on a wrong row); explicit so an empty column keeps its place */
+[data-sid="q6"] .metric-row .dnd-mark { grid-column: 2; }
+[data-sid="q6"] .metric-row .dnd-slot { grid-column: 3; }
+[data-sid="q6"] .metric-row .dnd-fix { grid-column: 4; }
 [data-sid="q1"] .q-fill { display: grid; grid-template-columns: 440px 298px; justify-content: start; }
+[data-sid="q1"] .q-instruction + .q-fill { margin-top: 48px; }   /* the two typed answers sit lower, clear of the question text */
 
 /* Sound button (round, same skin as the help button), bottom left beside the forward arrow. */
 .sound-btn {
@@ -727,7 +886,7 @@ button, input, select, textarea { font-family: inherit; }
    and the flash, the phone, the photo into the post and the likes follow. */
 [data-sid="party"] .party-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; background: #150f26; }
 [data-sid="party"] .narration-banner { z-index: 7; }
-[data-sid="party"] .phone { z-index: 4; opacity: 0; transform: translateY(110%); }
+[data-sid="party"] .phone { z-index: 9; opacity: 0; transform: translateY(110%); }   /* in front of the narration bubble (7), which is taller now */
 [data-sid="party"] .flash { opacity: 0; }
 [data-sid="party"] .post-photo { opacity: 0; }
 [data-sid="party"] .snap { left: 0; top: 0; width: 1920px; height: 1080px; background: url('assets/images/party-bg.jpg') center / cover; opacity: 0; }
@@ -749,4 +908,13 @@ button, input, select, textarea { font-family: inherit; }
   .screen.active[data-sid="party"] .phone { animation: none; opacity: 1; transform: none; }
   .screen.active[data-sid="party"] .post-photo, .screen.active[data-sid="party"] .react { animation: none; opacity: 1; }
 }
-}
+
+/* The dark screen after the finish popup: black, large white text, covers the whole stage. */
+#final-return { position: absolute; inset: 0; z-index: 400; }
+#final-return[hidden] { display: none; }
+#final-return:focus { outline: none; }
+#final-return { display: flex; align-items: center; justify-content: center; background: #000; color: #fff; text-align: center; }
+#final-return p { margin: 0; width: 1700px; font-size: 82px; line-height: 1.5; font-weight: 700; }
+
+/* a prefix and its number stay on one line ("מ-50%") */
+.nb { white-space: nowrap; }

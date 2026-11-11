@@ -172,6 +172,8 @@ window.addEventListener('message', function (e) {
     goTo(d.screen);
   } else if (d.type === 'APPLET_STARTED') {
     onAppletStarted(e.source);
+  } else if (d.type === 'APPLET_DONE') {
+    onAppletDone(e.source);
   }
 });
 
@@ -896,7 +898,9 @@ function checkAnswer(u) {
   }
 
   let outcome = 'correct';
-  if (g !== 'correct') outcome = (cfg.kind === 'multi' && fb.partial && g !== 'wrong') ? 'partial' : 'wrong2';
+  // "partial" = some right, some wrong. For a multi-choice question, and for a drag question that opts in with data-dnd-final="compare".
+  const partialKind = cfg.kind === 'multi' || (cfg.kind === 'dnd' && s.getAttribute('data-dnd-final') === 'compare');
+  if (g !== 'correct') outcome = (partialKind && fb.partial && g !== 'wrong') ? 'partial' : 'wrong2';
   st.done = true;
   st.outcome = outcome;
   recordScore(cfg.key, outcome === 'correct' ? cfg.weight : 0);
@@ -917,6 +921,7 @@ function renderFinal(u, cfg, st, justChecked) {
   u.querySelectorAll('textarea[data-min-chars]').forEach(function (t) { t.disabled = true; });   // the explanation is final with the answer
   resetFreeHint(u);
   if (cfg.kind === 'dnd') {
+    if (unitScreen(u).getAttribute('data-dnd-final') === 'compare') { dndCompare(u); dndLock(u); return; }   // keep the learner's cards, show the right ones beside the wrong rows
     if (st.outcome === 'correct') { dndMark(u, true); dndLock(u); return; }
     dndMark(u, false);
     dndLock(u);
@@ -984,6 +989,7 @@ function dndReset(s) {
   chips.sort(function (a, b) { return a._homeIndex - b._homeIndex; });
   chips.forEach(function (c) { c.classList.remove('picked', 'locked'); c.disabled = false; c._home.appendChild(c); });
   s.querySelectorAll('.dnd-slot').forEach(function (sl) { sl.classList.remove('correct', 'wrong', 'drop-target'); });
+  s.querySelectorAll('.dnd-mark, .dnd-fix').forEach(function (e) { e.remove(); });
   s.classList.remove('dnd-locked');
   qEnsure(s).touched = false;
   dndRefresh(s);
@@ -1114,6 +1120,30 @@ function dndMark(s, allRight) {
     sl.classList.add(allRight || dndSlotRight(sl) ? 'correct' : 'wrong');
   });
 }
+/* Final state, data-dnd-final="compare": every row keeps the card the learner put there, outlined green (right) or red
+   (wrong) and followed by a round check or cross; a wrong row also gets a second column with the right card.
+   Row order in the DOM: label, mark, slot (the learner's card), correct card; the row is a grid, so the columns line up. */
+function dndCompare(s) {
+  s.querySelectorAll('.dnd-mark, .dnd-fix').forEach(function (e) { e.remove(); });
+  s.querySelectorAll('.dnd-slot').forEach(function (sl) {
+    const right = dndSlotRight(sl);
+    sl.classList.remove('correct', 'wrong');
+    sl.classList.add(right ? 'correct' : 'wrong');
+    const mark = document.createElement('span');
+    mark.className = 'dnd-mark ' + (right ? 'ok' : 'no');
+    mark.setAttribute('role', 'img');
+    mark.setAttribute('aria-label', uiText(right ? 'dnd-right' : 'dnd-wrong'));
+    sl.insertAdjacentElement('beforebegin', mark);   // next to the learner's card, on the label's side
+    if (right) return;
+    const id = (sl.getAttribute('data-accept') || '').split(/\s+/)[0];
+    const chip = s.querySelector('.dnd-chip[data-chip="' + id + '"]');
+    const fix = document.createElement('span');
+    fix.className = 'dnd-fix';
+    fix.textContent = chip ? chip.textContent : '';
+    fix.setAttribute('aria-label', uiText('dnd-correct-is') + ' ' + fix.textContent);
+    sl.insertAdjacentElement('afterend', fix);
+  });
+}
 function dndLock(s) {
   s.classList.add('dnd-locked');
   s.querySelectorAll('.dnd-chip').forEach(function (c) { c.classList.add('locked'); c.classList.remove('picked'); });
@@ -1163,10 +1193,53 @@ function sendComplete() {      // once: the finish popup sends the grade when it
   completeSent = true;
   try { window.parent.postMessage({ type: 'LOMDA_COMPLETE', score: computeFinalGrade() }, '*'); } catch (e) {}
 }
-function finishLomda() {
+/* ===================================================================
+   The end of every lomda: a score pop-up, then a dark screen sending the learner back to the
+   Moodle (the quiz page that follows the lomda). Both are in index.html (#final-score,
+   #final-return) so their text is translated with everything else.
+     "סיימתי" (data-action="finish")  ->  finishLomda(): sends the grade, shows the score pop-up
+     the pop-up's X (or Escape)      ->  showReturnScreen(): the dark screen with the instruction
+   After the pop-up nothing else works: no arrows, no Tab out. The learner leaves through the Moodle.
+   A lomda that skins its own finish popup (.popup-src with data-close-action="finish") gets the
+   same ending: opening it sends the grade, its X shows the dark screen.
+   =================================================================== */
+let finalStage = false;
+function finishLomda() { showFinalScore(); }
+function showFinalScore() {
+  const box = document.getElementById('final-score');
+  if (!box) { sendComplete(); return; }
   sendComplete();
-  try { window.close(); } catch (e) {}
+  closeAllOverlays();
+  pauseAllMedia();
+  finalStage = true;
+  box.querySelectorAll('[data-final-grade]').forEach(function (el) { el.textContent = computeFinalGrade(); });
+  box.hidden = false;
+  const x = box.querySelector('.final-score-close');
+  (x || box).focus({ preventScroll: true });
 }
+function showReturnScreen() {
+  const ret = document.getElementById('final-return');
+  if (!ret) return;
+  finalStage = true;
+  closeAllOverlays();
+  pauseAllMedia();
+  document.dispatchEvent(new CustomEvent('lomda:end'));   // a lomda with its own sound (Web Audio) listens and stops it
+  const box = document.getElementById('final-score');
+  if (box) box.hidden = true;
+  ret.hidden = false;
+  ret.focus({ preventScroll: true });
+}
+document.addEventListener('click', function (e) {
+  if (e.target.closest && e.target.closest('#final-score .final-score-close')) showReturnScreen();
+});
+/* Capture phase: once the score is shown, only the X (and Escape) do anything. */
+document.addEventListener('keydown', function (e) {
+  if (!finalStage) return;
+  const ret = document.getElementById('final-return');
+  if (e.key === 'Escape') { if (ret && ret.hidden) showReturnScreen(); e.preventDefault(); e.stopImmediatePropagation(); return; }
+  if (e.key === 'Tab' || e.key === 'ArrowLeft' || e.key === 'ArrowRight') { e.preventDefault(); e.stopImmediatePropagation(); }
+}, true);
+document.addEventListener('lomda:end', function () { SFX.stopAll(); });   // the festival sound stops with the dark screen
 
 /* ---------------- Question stepper (progress pills) ----------------
    Built from the data-step numbers on question screens; shown only there. */
@@ -1213,6 +1286,7 @@ function enterApplet(s, n) {
 }
 function startAppletTimer(s) {
   const n = screenNum(s);
+  if (s.getAttribute('data-arrow-trigger') === 'done') return;   // this applet says when it is finished (APPLET_DONE)
   if (appletTimer[n] || appletRevealed[n]) return;
   const sec = parseFloat(s.getAttribute('data-arrow-after') || '15');
   appletTimer[n] = setTimeout(function () {
@@ -1220,6 +1294,17 @@ function startAppletTimer(s) {
     window.lomdaState.DONE[n] = true;
     if (currentScreen === n) revealForwardNav(n);
   }, sec * 1000);
+}
+/* An applet that must be finished before the learner may go on (data-arrow-trigger="done", e.g. the control center)
+   posts {type:'APPLET_DONE'} when its task is complete: only then does the forward arrow appear. */
+function onAppletDone(source) {
+  document.querySelectorAll('.screen[data-type="applet"] iframe').forEach(function (f) {
+    if (f.contentWindow !== source) return;
+    const s = screenOf(f), n = screenNum(s);
+    appletRevealed[n] = true;
+    window.lomdaState.DONE[n] = true;
+    if (currentScreen === n) revealForwardNav(n);
+  });
 }
 function onAppletStarted(source) {
   document.querySelectorAll('.screen[data-type="applet"] iframe').forEach(function (f) {
@@ -1264,7 +1349,7 @@ function openPopup(btn) {
   popupHidFeedback = fb.classList.contains('show');
   if (popupHidFeedback) fb.classList.remove('show');
   p.querySelectorAll('[data-final-grade]').forEach(function (el) { el.textContent = computeFinalGrade(); });
-  if (p.getAttribute('data-close-action') === 'finish') sendComplete();
+  if (p.getAttribute('data-close-action') === 'finish') { sendComplete(); finalStage = true; }   // from here on only its X / Escape work
   btn.classList.remove('blink');                 // a blinking button has done its job once used
   btn.classList.add('is-open');                  // the opener stays lit above the dark backdrop
   p._opener = btn;
@@ -1280,7 +1365,7 @@ function closePopup(p, how) {
   if (p._opener) { p._opener.classList.remove('is-open'); p._opener = null; }
   p.querySelectorAll('video, audio').forEach(function (m) { try { m.pause(); } catch (e) {} });
   if (how === 'nav') { popupHidFeedback = false; return; }
-  if (how === 'x' && p.getAttribute('data-close-action') === 'finish') { finishLomda(); return; }
+  if (p.getAttribute('data-close-action') === 'finish') { showReturnScreen(); return; }   // X, Escape or the backdrop: always the dark screen
   returnOverlayFocus();
   if (popupHidFeedback) { document.getElementById('feedback-popup').classList.add('show'); popupHidFeedback = false; }
 }
@@ -1605,6 +1690,41 @@ HOOKS['party'] = {
     hookAfter(12000, go);                              // safety: never stay stuck on the video
   },
   leave: function (s) { s.classList.remove('party-go'); const v = s.querySelector('.party-video'); if (v) { v.onended = null; v.onplaying = null; v.pause(); } hookClear(); }
+};
+/* test-six (slide 24): the drone's camera view is a silent looping clip. It starts on entry (muted, so
+   browsers allow it) and stops on leaving; under reduced motion it stays on its first frame (the poster). */
+HOOKS['park-lights'] = {
+  enter: function (s) {
+    const v = s.querySelector('.fx-lightsvid');
+    if (!v || reducedMotion()) return;
+    try { v.currentTime = 0; } catch (e) {}
+    const p = v.play();
+    if (p && p.catch) p.catch(function () {});
+  },
+  leave: function (s) { const v = s.querySelector('.fx-lightsvid'); if (v) v.pause(); }
+};
+/* control center (slide 28): a click on the monitor grows the applet to full screen; the applet then runs inside it. */
+HOOKS['control-center'] = {
+  enter: function (s) {
+    const b = s.querySelector('.monitor-open');
+    if (!b || b._wired) return;
+    b._wired = true;
+    b.addEventListener('click', function () {
+      s.classList.add('applet-full');
+      const f = s.querySelector('iframe');
+      if (f) { try { f.focus(); } catch (e) {} }
+    });
+  }
+};
+HOOKS['test-six'] = {
+  enter: function (s) {
+    const v = s.querySelector('.fx-view');
+    if (!v || reducedMotion()) return;
+    try { v.currentTime = 0; } catch (e) {}
+    const p = v.play();
+    if (p && p.catch) p.catch(function () {});         // refused: the poster simply stays
+  },
+  leave: function (s) { const v = s.querySelector('.fx-view'); if (v) v.pause(); }
 };
 /* finish (slide 32): the drone loops over the festival, with the show far away and the rotors close by. */
 HOOKS['finish'] = {

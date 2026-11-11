@@ -22,7 +22,7 @@ storyboard's slide number).
 | ✔ | file | PSD layer | x | y | w | h | how |
 |---|---|---|---|---|---|---|---|
 | ☐ | `assets/images/intro-bg.jpg` | `#17 2/רקע` | 0 | 0 | 1920 | 1080 | Recipe A |
-| ☐ | `assets/images/intro-lights.png` | `#17 2/אורות - לאנימציה` | 0 | 36 | 1920 | 1026 | Recipe B; the layer the lights animation is made from [trim] |
+| ☐ | `assets/images/intro-lights.png` | `#17 2/אורות - לאנימציה` | 0 | 36 | 1920 | 1026 | Recipe B; the layer the lights animation is made from [trim]. Source only: the page uses the eight `intro-fx-*.png` files that `tools/split_intro_lights.py` makes from it (sky, stage, screens, cool, pink, warm1-3) |
 
 ## Screen 2 — video-test (PSD frame #16 3)
 | ✔ | file | PSD layer | x | y | w | h | how |
@@ -77,7 +77,7 @@ storyboard's slide number).
 | ✔ | file | PSD layer | x | y | w | h | how |
 |---|---|---|---|---|---|---|---|
 | ☐ | `assets/images/park-lights-bg.jpg` | `#6 27/רקע` | 0 | 0 | 1920 | 1080 | Recipe A |
-| ☐ | `assets/images/park-lights-lights.png` | `#6 27/אורות הפארק - לאנימציה` | 267 | 218 | 1634 | 483 | Recipe B; twinkles |
+| ☐ | `assets/images/park-lights-lights.png` | `#6 27/אורות הפארק - לאנימציה` | 267 | 218 | 1634 | 483 | Recipe B; no longer used (replaced by the screen 12 clip) |
 | ☐ | `assets/images/park-lights-erez.png` | `#6 27/ארז` | 0 | 187 | 850 | 893 | Recipe B |
 | ☐ | `assets/images/park-lights-lihi.png` | `#6 27/ליהי` | 1067 | 353 | 698 | 727 | Recipe B |
 

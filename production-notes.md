@@ -30,7 +30,7 @@ listed where they change what the screen looks like.
 - Video is a placeholder. **Caption times are placeholders**, spread evenly over 40 s; replace with the SRT.
 
 ### 3 · q1 (slides 9–10) — input + applet
-- Embedded applet: the flight-log elements are **dragged** to sort them from small to large (applet file from the content team: `שאלה 1 - מיון צילומי רחפנים.html`).
+- Embedded applet: the flight-log elements are **dragged** to sort them from small to large (applet file from the content team: `שאלה 1 - מיון צילומי רחפנים.html`). **Built 2026-11-08** as `assets/app/q1-sort.html`, in an enlarged frame (x 76-791, y 162-1004) at its own size, larger than the design's, at the developer's request.
 - Typed answers: range **30**, median **125**.
 - Feedback state: the applet's numbers must show in the right order (110, 120, 125, 130, 140); "could be a picture and not the applet itself" (slide 10). Decide in phase 5.
 - Check marks (a small ✓ gif) appear next to the two boxes in the feedback state.
@@ -45,7 +45,7 @@ listed where they change what the screen looks like.
 - A picture of the corrected log (120 crossed out → 145) sits beside the stem. It needs **alt text** for accessibility (slide 15). Text not supplied: open question 5.
 
 ### 6 · q3 (slides 17–18) — single choice + applet
-- Applet "the one meant for question 4, with the 145 correction" (slide 17): file `שאלה 4 - מיון צילומי רחפנים.html`. Elements are dragged.
+- Applet "the one meant for question 4, with the 145 correction" (slide 17): file `שאלה 4 - מיון צילומי רחפנים.html`. Elements are dragged. **Built 2026-11-08** as `assets/app/q3-sort.html`, same frame as screen 3.
 - Feedback state: show the right arrangement; "can be a picture" (slide 18).
 - Correct: "נכונה".
 
@@ -58,7 +58,7 @@ listed where they change what the screen looks like.
 - The feedback holds an equation: `(650+x)/6 = 132 / ·6`, `650 + x = 792 / -650`, `x = 142`. Built with a live fraction. Check against the slide picture in phase 4.
 
 ### 10 · test-six (slide 24) — explanation
-- Subtle animation that shows what the drone films. Automatic, loops, no controls.
+- Subtle animation that shows what the drone films. Automatic, loops, no controls. Built (2026-11-08): slow drift of the camera view, twinkling lights, an autofocus box that locks onto four food trucks in turn, a ping on the minimap arrow. See PROGRESS decisions.
 - The design (PSD frame 24) still says **167** in the HUD text where the storyboard says **142** — designer to fix (see `PROGRESS.md`).
 
 ### 11 · q6 (slides 25–26) — drag to rows
@@ -70,7 +70,7 @@ listed where they change what the screen looks like.
 - Subtle animation of the park lights twinkling a little. Loops.
 
 ### 13 · control-center (slide 28) — applet
-- Applet `מרכז הבקרה.html`: clicking the computer screen makes it grow to full screen.
+- Applet `מרכז הבקרה.html`: clicking the computer screen makes it grow to full screen. **Built 2026-11-08**: `assets/app/control-center.html`; a click on the monitor grows it to the full stage.
 - **Continue only after the task is completed inside the applet.** The engine's gate counts seconds after start; it needs a "task completed" message from the applet instead. *To do (phase 5), via a HOOK, not the engine.* What completes the task: open question 7.
 
 ### 14 · party (slide 29)
@@ -85,8 +85,8 @@ listed where they change what the screen looks like.
 - If the video cannot play, a 12 s safety timer carries on; with reduced motion the final picture is shown at once.
 
 **Open (same approach, developer will do these after the party screen): screens 10 and 12 want real clips too.**
-- **10 · test-six (slide 24):** "what the drone films", a gentle automatic loop. Source picture `assets/images/test-six-view.jpg` (1685×959 at x 118, y 20). Ask for a slow aerial drift over the lit food-truck square, no cuts, loopable. Today: a slow zoom of the still.
-- **12 · park-lights (slide 27):** the park lights twinkle, a loop. Only the window view needs the clip (the layer `park-lights-lights.png` sits at x 268, y 219, 1630×481 over `park-lights-bg.jpg`; Erez and Lihi stay as pictures on top). Static camera, only the lights change, first and last frame equal so it loops without a jump. Today: the lights layer fades in and out.
+- **10 · test-six (slide 24):** "what the drone films", a gentle automatic loop. Source picture `assets/images/test-six-view.jpg` (1685×959 at x 118, y 20). Ask for a slow aerial drift over the lit food-truck square, no cuts, loopable. Today: a slow zoom of the still. **Done 2026-11-08:** start/end frame `../../מקורות וידאו/test-six-start-frame.png`, prompt in `test-six-clip-brief.md`; the developer's clip is wired in as `assets/videos/test-six-drone.mp4` (looped seamlessly by `tools/make_loop_clip.py`), starts from `HOOKS['test-six']`.
+- **12 · park-lights (slide 27):** the park lights twinkle, a loop. Only the window view needs the clip (the layer `park-lights-lights.png` sits at x 268, y 219, 1630×481 over `park-lights-bg.jpg`; Erez and Lihi stay as pictures on top). Static camera, only the lights change, first and last frame equal so it loops without a jump. **Done 2026-11-08:** the developer's clip is wired in as `assets/videos/park-lights.mp4` (looped by `tools/make_loop_clip.py`, shown through the window glass only, behind Erez and Lihi, starts from `HOOKS['park-lights']`); the old lights-layer pulse is gone. Earlier: **Prepared 2026-11-08:** start/end frame `../../מקורות וידאו/park-lights-start-frame.png` (the whole 1920×1080 background) and the prompt in `park-lights-clip-brief.md`; the clip is cut to the window's shape.
 - For all three: no audio, H.264 MP4 ≤ 25 MB, muted autoplay loop; the descriptive text stays on the screen for screen readers.
 
 ### 15 · q7 (slides 30–31) — single choice
@@ -99,6 +99,6 @@ listed where they change what the screen looks like.
 - "סיימתי" opens the final popup: **"כל הכבוד, המשימה הושלמה! / הציון שלך הוא __. / יש לסגור את המשימה בלחיצה על X."** The grade fills the blank; closing it with X ends the lomda and sends the score.
 
 ## Applets from the content team — check list (phase 5)
-- The three files are Claude "bundled pages": they load React from `unpkg.com` and fonts from Google. They must be made **self-contained** (local libraries, local fonts) before they can go into `assets/app/`.
+- The three files are Claude "bundled pages". They look as if they load React from `unpkg.com`, but the libraries and fonts are packed inside each file (checked 2026-11-08), so they work offline and went into `assets/app/` as they are (only the small edits listed in `PROGRESS.md`).
 - Rename to ASCII names: `q1-sort.html`, `q3-sort.html`, `control-center.html`.
 - They must post `APPLET_STARTED`; the control center must also report completion.
