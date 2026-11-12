@@ -1657,13 +1657,35 @@ function hookAfter(ms, fn) { hookTimers.push(setTimeout(fn, ms)); }
 function hookClear() { hookTimers.forEach(function (t) { clearTimeout(t); clearInterval(t); }); hookTimers.length = 0; SFX.stopAll(); }
 function reducedMotion() { return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
 
+/* The party sequence as Web Animations (same timings and easing as the old CSS rules). Played from script so a viewer that
+   overrides CSS animation durations (the QA system flattened them into one frame) cannot collapse it. */
+function partyPlay(s) {
+  partyStop(s);
+  const q = function (sel) { return s.querySelector(sel); };
+  const run = function (sel, keyframes, opts) { const el = q(sel); if (el && el.animate) s._partyAnims.push(el.animate(keyframes, Object.assign({ fill: 'both' }, opts))); };
+  s._partyAnims = [];
+  run('.flash', [{ opacity: 0 }, { opacity: .85, offset: .25 }, { opacity: 0 }], { duration: 400, easing: 'ease-out' });
+  run('.phone', [{ transform: 'translateY(110%)', opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 900, delay: 600, easing: 'ease-out' });
+  run('.snap', [
+    { opacity: 0, transform: 'translate(0px, 0px) scale(1)', offset: 0 },
+    { opacity: 1, transform: 'translate(0px, 0px) scale(1)', offset: .08 },
+    { opacity: 1, transform: 'translate(1228px, 600px) scale(.2)', offset: .78 },
+    { opacity: 0, transform: 'translate(1228px, 600px) scale(.2)', offset: 1 }
+  ], { duration: 1150, delay: 1600, easing: 'cubic-bezier(.5,0,.2,1)' });
+  run('.post-photo', [{ opacity: 0 }, { opacity: 1 }], { duration: 300, delay: 2450, easing: 'linear' });
+  run('.react', [{ opacity: 0, transform: 'scale(.3)' }, { opacity: 1, transform: 'scale(1.25)', offset: .7 }, { opacity: 1, transform: 'none' }], { duration: 500, delay: 2700, easing: 'ease-out' });
+}
+function partyStop(s) {
+  (s._partyAnims || []).forEach(function (a) { try { a.cancel(); } catch (e) {} });
+  s._partyAnims = [];
+}
 /* party (slide 29): the young people gather (CSS), a flash and a camera click, party music heard from
    behind a wall, the phone rises and the photo flies into the post, the likes count up to 128. */
 HOOKS['party'] = {
   enter: function (s) {
     hookClear();
     const n = s.querySelector('.likes-n'), v = s.querySelector('.party-video');
-    s.classList.remove('party-go');
+    s.classList.remove('party-go'); partyStop(s);
     refreshSoundButtons();
     if (reducedMotion()) { n.textContent = '128'; hookAfter(300, function () { SFX.play('party'); }); return; }
     n.textContent = '0';
@@ -1673,7 +1695,7 @@ HOOKS['party'] = {
       if (s.classList.contains('party-go')) return;
       clearInterval(poll);
       v.pause();
-      s.classList.add('party-go');
+      s.classList.add('party-go'); partyPlay(s);
       SFX.stopAll();
       SFX.click();
       hookAfter(500, function () { SFX.play('party'); });
@@ -1689,7 +1711,7 @@ HOOKS['party'] = {
     hookTimers.push(poll);
     hookAfter(12000, go);                              // safety: never stay stuck on the video
   },
-  leave: function (s) { s.classList.remove('party-go'); const v = s.querySelector('.party-video'); if (v) { v.onended = null; v.onplaying = null; v.pause(); } hookClear(); }
+  leave: function (s) { s.classList.remove('party-go'); partyStop(s); const v = s.querySelector('.party-video'); if (v) { v.onended = null; v.onplaying = null; v.pause(); } hookClear(); }
 };
 /* test-six (slide 24): the drone's camera view is a silent looping clip. It starts on entry (muted, so
    browsers allow it) and stops on leaving; under reduced motion it stays on its first frame (the poster). */

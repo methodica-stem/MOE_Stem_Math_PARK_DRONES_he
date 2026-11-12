@@ -896,11 +896,7 @@ button, input, select, textarea { font-family: inherit; }
 /* The snapped photo is its own full-stage layer (it used to sit inside .phone, so it rode up with the phone as a full-screen picture before the snap). Moved with transform only (no layout), whole picture shrunk evenly, no re-crop. */
 [data-sid="party"] .snap { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; background: url('assets/images/party-bg.jpg') center / 100% 100% no-repeat; opacity: 0; z-index: 10; pointer-events: none; transform-origin: 0 0; will-change: transform, opacity; }
 [data-sid="party"] .react { display: inline-block; opacity: 0; }
-.screen.active.party-go[data-sid="party"] .flash { animation: flashOnce .4s ease-out both; }
-.screen.active.party-go[data-sid="party"] .phone { animation: phoneRise .9s ease-out .6s both; }
-.screen.active.party-go[data-sid="party"] .snap { animation: snapIn 1.15s cubic-bezier(.5,0,.2,1) 1.6s both; }
-.screen.active.party-go[data-sid="party"] .post-photo { animation: fadeIn .3s linear 2.45s both; }
-.screen.active.party-go[data-sid="party"] .react { animation: pop .5s ease-out 2.7s both; }
+/* The flash, the phone rising, the photo snapped into the post and the likes pop are played by script.js (partyPlay, Web Animations with the same timings and easing as before), not by CSS animation: the QA viewer flattened the CSS animations into a single frame, so the sequence did not show. Under reduced motion the hook does not run and the static rules below apply. */
 @keyframes snapIn {
   0% { opacity: 0; transform: translate(0, 0) scale(1); }
   8% { opacity: 1; transform: translate(0, 0) scale(1); }
