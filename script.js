@@ -243,6 +243,12 @@ function showFeedback(type, cfg, unit) {
   popup.className = 'show ' + type + (s ? ' fb-' + sidOf(s) : '') +
     (isPart(unit) ? ' fb-' + sidOf(s) + '-p' + unit.getAttribute('data-part') : '') +
     ((isPart(unit) || (s && s.hasAttribute('data-feedback-close'))) && type !== 'retry' && type !== 'retryPartial' ? ' has-close' : '');
+  // "התשובה שלי" / "התשובה הנכונה": after a final wrong or partly right typed answer the right answer shows first,
+  // and this button swaps to the learner's own answer (right boxes green, wrong ones red) and back.
+  const mineBtn = document.getElementById('fb-mine');
+  const withMine = !!unit && (type === 'wrong2' || type === 'partial') && myAnswerOn(unit);
+  mineBtn.hidden = !withMine;
+  if (withMine) answerView(unit, 'right');
   const titleEl = document.getElementById('fb-title');
   titleEl.textContent = (cfg && cfg.title) || '';
   if (cfg && cfg.titleEl) {                       // keep inline parts of the title (a red outcome, a white rest)
@@ -267,6 +273,38 @@ function hideFeedback() {
   const popup = document.getElementById('feedback-popup');
   if (popup.classList.contains('show')) { popup.classList.remove('show'); returnOverlayFocus(); }
 }
+
+/* "התשובה שלי" / "התשובה הנכונה" (typed answers). After a final wrong or partly right answer the typed boxes show the right
+   answer (green, as before); the button in the feedback swaps them to what the learner typed (right boxes green, wrong ones
+   red) and back. The learner's values and which boxes were right are kept at the final check (st.mine, st.marks). */
+function myAnswerOn(u) {
+  const st = qEnsure(u);
+  return qConfig(u).kind === 'input' && st.done && st.outcome !== 'correct' && !!st.mine;
+}
+function answerView(u, which) {
+  const st = qEnsure(u), mine = which === 'mine';
+  st.view = which;
+  u.querySelectorAll('.q-input').forEach(function (qi, k) {
+    const ins = qi.querySelectorAll('.q-in');
+    if (mine) ins.forEach(function (i, j) { i.value = st.mine[k][j]; });
+    else {
+      const ans = parseValue(qi.getAttribute('data-answer'));
+      const num = qi.querySelector('[data-frac="num"]'), den = qi.querySelector('[data-frac="den"]');
+      if (ans && num && den) { num.value = ans[0]; den.value = ans[1]; }
+      else if (ans && ins[0]) ins[0].value = ans[0];
+    }
+    qi.classList.toggle('revealed', !mine);
+    qi.classList.toggle('correct', mine && st.marks[k]);
+    qi.classList.toggle('wrong', mine && !st.marks[k]);
+  });
+  const btn = document.getElementById('fb-mine');
+  btn.textContent = uiText(mine ? 'answer-right' : 'answer-mine');
+  btn.setAttribute('aria-pressed', String(mine));
+}
+document.getElementById('fb-mine').addEventListener('click', function () {
+  const s = screenEl(currentScreen), u = s && qUnits(s)[0];
+  if (u && myAnswerOn(u)) answerView(u, qEnsure(u).view === 'mine' ? 'right' : 'mine');
+});
 
 /* Feedback text is written in the screen itself:
      <div class="fb-src" hidden>
@@ -485,7 +523,7 @@ function initVideo(wrap) {
       else capEl.classList.add('hidden');
     }
     // Unlock a little before the real end: in some embeds 'ended' fires late or never.
-    if (!videoEnded[n] && video.duration && video.duration - video.currentTime <= 3) onVideoEnded(n);
+    if (!videoEnded[n] && video.duration && video.duration - video.currentTime <= 1) onVideoEnded(n);
   });
   video.addEventListener('ended', function () { onVideoEnded(n); });
   if (!bar) return;
@@ -864,7 +902,8 @@ function grade(u) {
       const hook = HOOKS[sidOf(s)];
       return hook && hook.grade && hook.grade(inputValues(u)) ? 'correct' : 'wrong';
     }
-    return Array.prototype.every.call(u.querySelectorAll('.q-input'), inputRight) ? 'correct' : 'wrong';
+    const boxes = u.querySelectorAll('.q-input'), rightN = Array.prototype.filter.call(boxes, inputRight).length;
+    return rightN === boxes.length ? 'correct' : (rightN > 0 ? 'partialMixed' : 'wrong');   // some boxes right, some wrong -> "נכון חלקית" at the end
   }
   let rightPicked = 0, wrongPicked = 0, rightTotal = 0;
   u.querySelectorAll('.q-opt').forEach(function (o) {
@@ -899,8 +938,13 @@ function checkAnswer(u) {
 
   let outcome = 'correct';
   // "partial" = some right, some wrong. For a multi-choice question, and for a drag question that opts in with data-dnd-final="compare".
-  const partialKind = cfg.kind === 'multi' || (cfg.kind === 'dnd' && s.getAttribute('data-dnd-final') === 'compare');
+  const partialKind = cfg.kind === 'multi' || cfg.kind === 'input' || (cfg.kind === 'dnd' && s.getAttribute('data-dnd-final') === 'compare');
   if (g !== 'correct') outcome = (partialKind && fb.partial && g !== 'wrong') ? 'partial' : 'wrong2';
+  if (cfg.kind === 'input' && g !== 'correct') {      // keep the learner's own answer before the right one is shown
+    const boxes = Array.prototype.slice.call(u.querySelectorAll('.q-input'));
+    st.mine = boxes.map(function (qi) { return Array.prototype.map.call(qi.querySelectorAll('.q-in'), function (i) { return i.value; }); });
+    st.marks = boxes.map(inputRight);
+  }
   st.done = true;
   st.outcome = outcome;
   recordScore(cfg.key, outcome === 'correct' ? cfg.weight : 0);
@@ -981,7 +1025,22 @@ function dndRemember(s) {
 }
 function dndRefresh(s) {
   s.querySelectorAll('.dnd-slot').forEach(function (sl) { sl.classList.toggle('filled', !!sl.querySelector('.dnd-chip')); });
+  dndStackRefresh(s);
   updateCheckable(s);
+}
+/* Card stacks (data-dnd-stack on the section): the bank holds several copies of each card (ids up1..up4, dn1..dn4, ...),
+   sitting in one place. Only the first copy of each kind that is still in the bank (and not being dragged) shows; the others
+   wait behind it, so the learner sees ONE card per stack and, once it is dragged away, the next one is already underneath. */
+function dndStackRefresh(s) {
+  if (!s.hasAttribute('data-dnd-stack')) return;
+  const bank = dndBank(s), seen = {};
+  s.querySelectorAll('.dnd-chip').forEach(function (c) {
+    if (c.parentElement !== bank) { c.classList.remove('stack-behind'); return; }
+    const kind = (c.getAttribute('data-chip') || '').replace(/\d+$/, '');
+    const front = !seen[kind] && !c.classList.contains('dragging');
+    if (front) seen[kind] = true;
+    c.classList.toggle('stack-behind', !front);
+  });
 }
 function dndReset(s) {
   dndRemember(s);
@@ -1075,6 +1134,7 @@ document.addEventListener('pointermove', function (e) {
     d.offY = (e.clientY - r.top) / k;
     document.getElementById('app').appendChild(d.ghost);
     d.chip.classList.add('dragging');
+    dndStackRefresh(screenOf(d.chip));      // the next card of the stack shows underneath
   }
   d.ghost.style.left = ((e.clientX - app.left) / k - d.offX) + 'px';
   d.ghost.style.top = ((e.clientY - app.top) / k - d.offY) + 'px';
@@ -1092,6 +1152,7 @@ function dndEndDrag(e) {
     else if (d.chip.closest('.dnd-slot')) dndReturn(d.chip);   // dragged out of a slot -> back to the bank
     d.ghost.remove();
     d.chip.classList.remove('dragging');
+    dndStackRefresh(s);
     if (dndPicked) { dndPicked.classList.remove('picked'); dndPicked = null; }
     setTimeout(function () { dndDrag = null; }, 0);         // let the click that follows see .moved
   } else {
@@ -1355,7 +1416,29 @@ function openPopup(btn) {
   p._opener = btn;
   p.hidden = false;
   p.classList.add('show');
+  tightenPopup(p);
   openOverlayFocus(p.querySelector('.popup-close') || p);
+}
+/* A help panel wraps around its text: the text is balanced (even lines, no orphan word, CSS text-wrap: balance), which can leave
+   the panel wider than the lines are, so the panel is set to the widest line plus its padding. Not for the finish popup. */
+function tightenPopup(p) {
+  const panel = p.querySelector(':scope > .popup-panel');
+  if (!panel || p.classList.contains('popup-final')) return;
+  panel.style.width = '';
+  const k = appScale();
+  let left = Infinity, right = -Infinity;
+  panel.querySelectorAll('p').forEach(function (para) {
+    const r = document.createRange();
+    r.selectNodeContents(para);
+    Array.prototype.forEach.call(r.getClientRects(), function (b) {
+      if (b.width < 1) return;
+      left = Math.min(left, b.left); right = Math.max(right, b.right);
+    });
+  });
+  if (!isFinite(left)) return;
+  const cs = getComputedStyle(panel);
+  const extra = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight) + parseFloat(cs.borderLeftWidth) + parseFloat(cs.borderRightWidth);
+  panel.style.width = Math.ceil((right - left) / k + (cs.boxSizing === 'border-box' ? extra : 0) + 4) + 'px';
 }
 /* how: 'x' (its close button), 'esc' (Escape / backdrop), 'nav' (leaving the screen) */
 function closePopup(p, how) {

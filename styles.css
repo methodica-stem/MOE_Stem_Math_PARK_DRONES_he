@@ -150,16 +150,18 @@ button, input, select, textarea { font-family: inherit; }
 .btn-check:disabled { display: none; }
 .btn-check:hover { filter: drop-shadow(0px 8px 12px rgba(0,0,0,0.38)) brightness(1.15); }
 
-/* Narration banner: the design's translucent card, flush to the top-right corner. */
+/* Narration bubble: the white one of the Recycle lomda (black edge, hard shadow, no top edge), hanging from the top of the
+   stage. Every sentence is its own paragraph, so it starts a new line; the bubble is as wide as its longest sentence
+   (max-content) up to --nb-max, and a sentence longer than that wraps into evenly balanced rows. */
 .narration-banner {
-  position: absolute; top: 0; right: 0; width: 1110px;
-  padding: 44px 60px 44px 68px;
-  background: rgba(238,243,230,.9);
-  border-radius: 0 0 0 64px;
-  font-size: var(--text-size); font-weight: 600; line-height: 1.5; text-align: right; color: #1A1A1A;
+  position: absolute; top: 0; right: 64px; width: max-content; max-width: var(--nb-max, 1750px);
+  box-sizing: border-box; padding: 24px 48px 28px;
+  background: #fff; border: 6px solid #000; border-top: none; border-radius: 0 0 48px 48px;
+  box-shadow: 4px 10px 0 #000;
+  font-size: var(--text-size); font-weight: 500; line-height: 1.3; text-align: right; color: #232020;
   z-index: 6;
 }
-.narration-banner p { margin: 0; }
+.narration-banner p { margin: 0; text-wrap: balance; }
 
 .text-panel {
   position: absolute; top: 160px; right: 160px; width: 900px;
@@ -219,6 +221,15 @@ button, input, select, textarea { font-family: inherit; }
 .fb-close::after { transform: translate(-50%, -50%) rotate(-45deg); }
 .fb-close:hover { background: rgba(255,255,255,.3); }
 #feedback-popup.has-close .fb-close { display: block; }
+/* "התשובה שלי" / "התשובה הנכונה": on the title row, in the left corner, white like the lomda's cards (the same button as the Recycle lomda). */
+.fb-mine {
+  position: absolute; top: 14px; left: 24px; margin: 0; min-height: 48px; padding: 4px 26px;
+  border: 2px solid #1A1A1A; border-radius: 12px; background: #fff; color: #1A1A1A;
+  font-family: inherit; font-size: 28px; font-weight: 700; cursor: pointer;
+}
+.fb-mine[hidden] { display: none; }
+.fb-mine:hover { filter: brightness(.92); }
+.fb-mine:focus-visible { outline: 4px solid var(--accent); outline-offset: 3px; }
 #feedback-popup.has-close .fb-title-row { padding-left: 64px; }
 
 /* Question stepper (progress pills) — built by script.js from data-step. The design: seven small
@@ -521,14 +532,14 @@ button, input, select, textarea { font-family: inherit; }
 .popup-panel {
   position: relative;
   position: absolute; left: 190px; top: 60px;
-  width: 500px; max-height: 960px; overflow: auto;
-  padding: 44px 50px 38px;
+  width: max-content; max-width: 680px; max-height: 960px; overflow: auto;
+  padding: 40px 48px 36px 96px;   /* the text stays at the top, right next to the X's strip; script.js (tightenPopup) then wraps the panel around the balanced lines */
   background: var(--popup-bg);
   border: 7px solid #1F1F1F; border-radius: 40px;
   box-shadow: 0 8px 24px rgba(0,0,0,.35);
   font-size: var(--text-size); font-weight: 400; line-height: 1.3; text-align: right;
 }
-.popup-panel p { margin: 0 0 6px; }
+.popup-panel p { margin: 0 0 6px; text-wrap: balance; }   /* even lines, no orphan word */
 .popup-close {
   position: absolute; top: 24px; left: 28px;
   width: 44px; height: 44px; padding: 0;
@@ -643,7 +654,7 @@ button, input, select, textarea { font-family: inherit; }
 @media (prefers-reduced-motion: reduce) { .screen.active .fx, .screen.active .phone, .screen.active .flash, .screen.active .screen-bg { animation: none !important; } }
 
 /* ---- 1 · intro ---- */
-[data-sid="intro"] .narration-banner { width: 1240px; }
+[data-sid="intro"] .narration-banner { --nb-max: 1300px; }   /* the second sentence is too long for one row: it wraps in two balanced rows */
 /* The opening picture "breathes": the designer's lights layer is split by region
    (tools/split_intro_lights.py) and every region fades a brighter copy of itself in and out over
    the artwork, each on its own timing. The artwork is the normal state (opacity 0 = as drawn).
@@ -675,7 +686,7 @@ button, input, select, textarea { font-family: inherit; }
 @keyframes ltWarm   { from { opacity: 0; } to { opacity: 1; } }
 
 /* ---- 2 · video-test ---- */
-[data-sid="video-test"] .narration-banner { width: 1730px; }   /* two rows only: the man's face is just below it */
+[data-sid="video-test"] .narration-banner { --nb-max: 1860px; font-size: 38px; }   /* one row per sentence (the first is 1730 px at 38 px): two rows only, the man's face is just below it */
 
 /* ---- 3 · q1 ---- */
 [data-sid="q1"] .q-text { width: 970px; }
@@ -693,12 +704,12 @@ button, input, select, textarea { font-family: inherit; }
 /* ---- 4 · video-typo ---- */
 /* ---- 5 · q2 ---- */
 /* The text moves to the right edge (in line with the progress pills) to give the picture room (was 468 px wide). */
-[data-sid="q2"] .q-text { right: 90px; width: 1120px; }
+[data-sid="q2"] .q-text { top: 112px; right: 90px; width: 960px; }   /* packed tighter at the right edge (more rows) so there is clear space between the picture and the text */
 [data-sid="q2"] .q-figure { position: absolute; left: 70px; top: 165px; width: 620px; height: 634px; }
 /* The explanation sits below both the picture and the answers, as wide as it can be without covering the two arrows
    (x 280 to 1765, y 812 to the foot of the white panel at 1050), text centred, 42 / 50 px (was 34 / 46): each
    paragraph fits on one line. The short retry box is a little smaller. */
-#feedback-popup.fb-q2 { left: 280px; top: 812px; width: 1485px; min-height: 238px; box-sizing: border-box; padding: 16px 36px; }
+#feedback-popup.fb-q2 { left: 280px; top: 834px; width: 1485px; min-height: 216px; box-sizing: border-box; padding: 16px 36px; }
 #feedback-popup.fb-q2.show:not(.retry) { display: flex; flex-direction: column; justify-content: center; }
 #feedback-popup.fb-q2 .fb-title { font-size: 50px; }
 #feedback-popup.fb-q2 .fb-body p, #feedback-popup.fb-q2 .fb-body li { font-size: 40px; }
@@ -721,11 +732,10 @@ button, input, select, textarea { font-family: inherit; }
 #feedback-popup.fb-q3.retry .fb-title { font-size: 50px; }
 #feedback-popup.fb-q3.retry .fb-body p { font-size: 42px; }
 /* ---- 7 · next-test ---- */
-[data-sid="next-test"] .narration-banner { width: 910px; }
 /* ---- 8 · q4 ---- */
 /* Lihi is much larger (was 484 x 634): she still stands on the foot of the white panel (bottom 1058); the text sits at the right edge. */
-[data-sid="q4"] .q-text { right: 90px; width: 1000px; }
-[data-sid="q4"] .q-figure { position: absolute; left: 70px; top: 158px; width: 687px; height: 900px; }
+[data-sid="q4"] .q-text { right: 90px; width: 1225px; }   /* wide enough for the first row to end with "תמונות," (1188 px at 40 px) */
+[data-sid="q4"] .q-figure { position: absolute; left: 60px; top: 193px; width: 520px; height: 865px; }   /* Lihi from the waist up, standing on the foot of the white panel (bottom 1058) */
 [data-sid="q4"] .btn-check { left: 1539px; top: 905px; }   /* below the "try again" box (it ends at y 888); found by layout_check.py */
 /* Short explanation: a panel that hugs its text (each sentence on one line, 42 / 50 px: a little larger than the question text,
    not much), right edge in line with the other screens (1765), just under the answers (they end at y 691). */
@@ -737,8 +747,8 @@ button, input, select, textarea { font-family: inherit; }
 #feedback-popup.fb-q4.retry .fb-body p { font-size: 42px; }
 /* ---- 9 · q5 ---- */
 /* Bigger drone picture (was 552 x 368); the text sits at the right edge. */
-[data-sid="q5"] .q-text { right: 90px; width: 1000px; }
-[data-sid="q5"] .q-figure { position: absolute; left: 70px; top: 230px; width: 720px; height: 480px; }
+[data-sid="q5"] .q-text { right: 90px; width: 1110px; }   /* the second sentence (1087 px at 40 px) fits on one row, "תמונות." no longer sits alone */
+[data-sid="q5"] .q-figure { position: absolute; left: 56px; top: 240px; width: 620px; height: 413px; }
 /* The explanation (7 rows with the equation) starts right under the answer box (it ends at y 521) and runs to the foot of
    the white panel (538 + 512 = 1050); 42 / 52 px is the most that fits without wrapping a row (was 34 / 46). */
 #feedback-popup.fb-q5 { left: 830px; top: 538px; width: 935px; min-height: 512px; box-sizing: border-box; padding: 12px 40px; }
@@ -754,7 +764,6 @@ button, input, select, textarea { font-family: inherit; }
    screen of the monitor picture (118,18 to 1803,980), under the HUD; the poster (its first frame) shows
    until it plays and under reduced motion. The notch at the bottom left keeps the clip off the few pixels
    of the real sticky note that show below the HUD's edge. */
-[data-sid="test-six"] .narration-banner { width: 1060px; }
 [data-sid="test-six"] .fx-viewclip { left: 118px; top: 18px; width: 1685px; height: 962px; overflow: hidden; background: #05060a;
   clip-path: polygon(0 0, 100% 0, 100% 100%, 270px 100%, 270px 957px, 40px 957px, 40px 100%, 0 100%); }
 [data-sid="test-six"] .fx-view { left: 0; top: 0; width: 1685px; height: 962px; object-fit: cover; }
@@ -762,33 +771,31 @@ button, input, select, textarea { font-family: inherit; }
 [data-sid="test-six"] { overflow: hidden; }
 /* ---- 11 · q6 ---- */
 /* Bigger cards and drop targets (cards 325 x 96 px, was 290 x 80); the stacks keep the left side, the text and the rows the right. */
-[data-sid="q6"] .q-text { width: 1000px; }
-[data-sid="q6"] .q-rows { position: absolute; right: 150px; top: 652px; width: 1000px; }
-[data-sid="q6"] .metric-row { display: flex; align-items: center; gap: 24px; margin: 0 0 12px; font-size: var(--text-size); font-weight: 700; }
+/* Layout after the design (frame 25): the text across the top, a row of the four metrics each with its box, and under it a row of cards,
+   like the design's row of buttons. (The design is the older one-box question; the cards and boxes are the current mechanism.) */
+[data-sid="q6"] .q-text { top: 112px; right: 150px; width: 1580px; }
+[data-sid="q6"] .q-body, [data-sid="q6"] .q-instruction { margin-bottom: 8px; }
+[data-sid="q6"] .q-rows { position: absolute; right: 150px; top: 478px; width: 1580px; display: flex; justify-content: space-between; }
+[data-sid="q6"] .metric-row { position: relative; display: grid; grid-template-columns: 330px; grid-template-rows: 44px 88px 88px; row-gap: 8px; align-items: center; margin: 0; text-align: center; font-size: var(--text-size); font-weight: 700; }
 [data-sid="q6"] .metric-row .dnd-slot { margin: 0; box-sizing: border-box; width: 330px; min-width: 330px; height: 88px; min-height: 88px; padding: 0; border-radius: 22px; }
 [data-sid="q6"] .dnd-chip { min-width: 325px; min-height: 84px; font-size: 40px; }
-[data-sid="q6"] .dnd-bank { position: absolute; left: 70px; top: 160px; width: 700px; display: grid; grid-template-columns: 335px 335px; grid-auto-rows: 130px; gap: 20px 30px; margin: 0; min-height: 0; }
+[data-sid="q6"] .dnd-bank { position: absolute; right: 402px; top: 695px; width: 1075px; display: grid; grid-template-columns: 325px 325px 325px; column-gap: 50px; grid-auto-rows: 84px; margin: 0; min-height: 0; }
 [data-sid="q6"] .dnd-chip { width: 325px; }
-[data-sid="q6"] .dnd-chip[data-chip^="up"] { grid-area: 1 / 2; }
-[data-sid="q6"] .dnd-chip[data-chip^="dn"] { grid-area: 1 / 1; }
-[data-sid="q6"] .dnd-chip[data-chip^="eq"] { grid-area: 2 / 1; }
-[data-sid="q6"] .dnd-chip[data-chip$="1"] { transform: translate(-18px, -18px); }
-[data-sid="q6"] .dnd-chip[data-chip$="2"] { transform: translate(-12px, -12px); }
-[data-sid="q6"] .dnd-chip[data-chip$="3"] { transform: translate(-6px, -6px); }
-/* Stack order: the card at the front (no offset) is on top and whole; each one behind it peeks out up and to the left.
-   (Without a z-index the offset cards are painted over the plain one, which made the front card look see-through.) */
-[data-sid="q6"] .dnd-chip[data-chip$="1"] { z-index: 1; }
-[data-sid="q6"] .dnd-chip[data-chip$="2"] { z-index: 2; }
-[data-sid="q6"] .dnd-chip[data-chip$="3"] { z-index: 3; }
-[data-sid="q6"] .dnd-chip[data-chip$="4"] { z-index: 4; }
+[data-sid="q6"] .dnd-chip[data-chip^="up"] { grid-area: 1 / 1; }
+[data-sid="q6"] .dnd-chip[data-chip^="dn"] { grid-area: 1 / 2; }
+[data-sid="q6"] .dnd-chip[data-chip^="eq"] { grid-area: 1 / 3; }
+/* One card per stack (no stacked look): the copies of a card sit in the same place and script.js (dndStackRefresh) shows only
+   the first one still in the bank, so after a card is dragged away the next one is already there underneath. */
+.dnd-chip.stack-behind, [data-dnd-stack] .dnd-chip.dragging { visibility: hidden; }
 [data-sid="q6"] .dnd-chip { align-self: end; justify-self: end; }
 /* The long explanation takes the whole left side (x 58-758, y 160-925, above the back arrow) and covers the card stacks, which are
    locked by then; 40 / 50 px is the most that fits (was 34 / 46). The short retry box sits below the stacks, which are still needed. */
-#feedback-popup.fb-q6 { left: 58px; top: 160px; width: 700px; min-height: 765px; box-sizing: border-box; padding: 28px 36px; }
+#feedback-popup.fb-q6 { left: 190px; top: 732px; width: 1580px; min-height: 0; box-sizing: border-box; padding: 10px 36px 8px; }
 #feedback-popup.fb-q6.show:not(.retry) { display: flex; flex-direction: column; justify-content: center; }
-#feedback-popup.fb-q6 .fb-title { font-size: 50px; }
-#feedback-popup.fb-q6 .fb-body p { font-size: 40px; }
-#feedback-popup.fb-q6.retry { top: 470px; min-height: 0; padding: 24px 36px 20px; }
+#feedback-popup.fb-q6 .fb-title { font-size: 44px; }
+#feedback-popup.fb-q6 .fb-body p { font-size: 33px; margin-bottom: 2px; }
+[data-sid="q6"].dnd-locked .dnd-bank { visibility: hidden; }   /* the cards are not needed once the answer is final; the explanation takes their row */
+#feedback-popup.fb-q6.retry { left: 560px; top: 850px; width: 800px; min-height: 0; padding: 24px 36px 20px; }
 #feedback-popup.fb-q6.retry .fb-body p { font-size: 40px; }
 [data-sid="q6"] .dnd-slot .dnd-chip { transform: none; }   /* a card dropped on a row sits squarely in it, not offset like a card in the stack */
 /* A card in a row fills the row exactly, so an outline drawn on the card IS the shape of the box (no gap, nothing bigger). */
@@ -798,7 +805,7 @@ button, input, select, textarea { font-family: inherit; }
 [data-sid="q6"] .dnd-slot.correct, [data-sid="q6"] .dnd-slot.wrong { border: 2px solid transparent; }
 [data-sid="q6"] .dnd-slot.correct .dnd-chip { border: 8px solid var(--opt-correct); }
 [data-sid="q6"] .dnd-slot.wrong .dnd-chip { border: 8px solid var(--opt-wrong); }
-[data-sid="q6"] .dnd-mark { position: relative; width: 60px; height: 60px; border-radius: 50%; justify-self: center; }
+[data-sid="q6"] .dnd-mark { position: absolute; right: -22px; top: 30px; z-index: 3; width: 60px; height: 60px; border-radius: 50%; box-shadow: 0 0 0 4px #fff; }   /* a badge on the slot's top corner */
 [data-sid="q6"] .dnd-mark.ok { background: var(--opt-correct); }
 [data-sid="q6"] .dnd-mark.no { background: var(--opt-wrong); }
 [data-sid="q6"] .dnd-mark::after { content: ''; position: absolute; inset: 15px; background: #fff;
@@ -809,7 +816,6 @@ button, input, select, textarea { font-family: inherit; }
   background: linear-gradient(180deg, #DCE5F0 0%, #B3C1D5 45%, #8E9FB9 100%);
   box-shadow: inset 0 3px 3px rgba(255,255,255,.75), 0 3px 5px rgba(40,60,90,.35); }
 /* ---- 12 · park-lights ---- */
-[data-sid="park-lights"] .narration-banner { width: 1220px; }
 /* the clip is the whole 1920x1080 frame, shown only through the window glass (the monitor, sill and desk stay as in the picture) */
 [data-sid="park-lights"] .fx-lightsclip { left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden;
   clip-path: polygon(268px 0, 1920px 0, 1920px 730px, 362px 672px, 362px 498px, 268px 498px); }
@@ -817,19 +823,17 @@ button, input, select, textarea { font-family: inherit; }
 [data-sid="park-lights"] .fx-erez { left: 0; top: 187px; width: 850px; height: 893px; }
 [data-sid="park-lights"] .fx-lihi { left: 1067px; top: 354px; width: 696px; height: 726px; }
 /* ---- 13 · control-center ---- */
-[data-sid="control-center"] .narration-banner { width: 905px; }
 [data-sid="control-center"] .monitor-frame { left: 120px; top: 29px; width: 1681px; height: 942px; border-radius: 0; box-shadow: none; }
-/* The applet is laid out for 2/3 of its frame and shown 1.5 times larger (text and buttons were too small to read). A click on the
+/* The applet is laid out for 1/1.8 of its frame and shown 1.8 times larger (text and buttons were too small to read; was 1.5). A click on the
    monitor grows the frame to the whole stage (above the banner, below the arrows), as the storyboard asks. */
 [data-sid="control-center"] .monitor-frame { transition: left .5s ease, top .5s ease, width .5s ease, height .5s ease; }
-[data-sid="control-center"] .monitor-frame iframe { position: absolute; left: 0; top: 0; width: 66.6667%; height: 66.6667%; transform: scale(1.5); transform-origin: 0 0; }
+[data-sid="control-center"] .monitor-frame iframe { position: absolute; left: 0; top: 0; width: 55.5556%; height: 55.5556%; transform: scale(1.8); transform-origin: 0 0; }   /* laid out for 1/1.8 of the frame, shown 1.8 x larger; the applet scrolls inside (no scrolling="no"), so a long feedback can be scrolled to */
 [data-sid="control-center"] .monitor-open { position: absolute; inset: 0; z-index: 2; padding: 0; border: 0; background: transparent; cursor: pointer; }
 [data-sid="control-center"] .monitor-open:focus-visible { outline: 6px solid var(--accent); outline-offset: -6px; }
 [data-sid="control-center"].applet-full .monitor-open { display: none; }
 [data-sid="control-center"].applet-full .monitor-frame { left: 0; top: 0; width: 1920px; height: 1080px; z-index: 10; }
 @media (prefers-reduced-motion: reduce) { [data-sid="control-center"] .monitor-frame { transition: none; } }
 /* ---- 14 · party ---- */
-[data-sid="party"] .narration-banner { width: 910px; }
 [data-sid="party"] .phone { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; pointer-events: none; }
 [data-sid="party"] .phone > * { position: absolute; margin: 0; }
 [data-sid="party"] .phone-screen { left: 1229px; top: 250px; width: 389px; height: 819px; }
@@ -855,23 +859,24 @@ button, input, select, textarea { font-family: inherit; }
 #feedback-popup.fb-q7.show:not(.retry) { display: flex; flex-direction: column; justify-content: center; }
 #feedback-popup.fb-q7 .fb-title { font-size: 46px; }
 #feedback-popup.fb-q7 .fb-body p { font-size: 40px; margin-bottom: 3px; }
-#feedback-popup.fb-q7 .fb-body p:nth-child(n+3):nth-child(-n+5) { display: inline; margin-inline-end: 18px; }
+#feedback-popup.fb-q7 .fb-body p:nth-child(n+3):nth-child(-n+5) { display: inline; margin: 0; }
+/* one ordinary space between the three run-together parts (it was an 18 px margin after each); the bulb emoji has wide side room of its own, trimmed at its start */
+#feedback-popup.fb-q7 .fb-body p:nth-child(3)::after, #feedback-popup.fb-q7 .fb-body p:nth-child(4)::after { content: ' '; }
+.bulb { margin-inline-start: -.12em; }
 #feedback-popup.fb-q7.retry { left: 670px; width: 1100px; padding: 24px 40px 20px; }
 #feedback-popup.fb-q7.retry .fb-title { font-size: 50px; }
 #feedback-popup.fb-q7.retry .fb-body p { font-size: 42px; }
 /* ---- 16 · finish ---- */
-[data-sid="finish"] .narration-banner { width: 1010px; }
 [data-sid="finish"] .fx-drone { left: 600px; top: 255px; width: 541px; height: 272px; }   /* 60 px lower than the design so its rotors clear the narration bubble */
 .screen.active[data-sid="finish"] .fx-drone { animation: droneFloat 5s ease-in-out infinite alternate; }
 @keyframes droneFloat { from { transform: translate(-30px, 8px) rotate(-1deg); } to { transform: translate(30px, -10px) rotate(1deg); } }
 [data-sid="finish"] .finish-btn { left: 283px; top: 855px; width: 187px; height: 115px; padding: 0 0 6px; background-image: url('assets/images/ui-btn-check.png'); background-size: 100% 100%; font-size: 42px; }
 .eq-line { text-align: right; }
 [data-sid="q5"] .eq-line { text-align: center; }
-[data-sid="q6"] .metric-row { display: grid; grid-template-columns: 190px 60px 330px 330px; column-gap: 14px; justify-content: start; }
+
 /* columns, from the label: check or cross | the learner's card | the right card (only on a wrong row); explicit so an empty column keeps its place */
-[data-sid="q6"] .metric-row .dnd-mark { grid-column: 2; }
-[data-sid="q6"] .metric-row .dnd-slot { grid-column: 3; }
-[data-sid="q6"] .metric-row .dnd-fix { grid-column: 4; }
+[data-sid="q6"] .metric-row .dnd-slot { grid-row: 2; }
+[data-sid="q6"] .metric-row .dnd-fix { grid-row: 3; }   /* the right card, under the learner's card, only on a wrong row */
 [data-sid="q1"] .q-fill { display: grid; grid-template-columns: 440px 298px; justify-content: start; }
 [data-sid="q1"] .q-instruction + .q-fill { margin-top: 48px; }   /* the two typed answers sit lower, clear of the question text */
 
