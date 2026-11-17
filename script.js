@@ -278,12 +278,14 @@ function hideFeedback() {
    answer (green, as before); the button in the feedback swaps them to what the learner typed (right boxes green, wrong ones
    red) and back. The learner's values and which boxes were right are kept at the final check (st.mine, st.marks). */
 function myAnswerOn(u) {
-  const st = qEnsure(u);
-  return qConfig(u).kind === 'input' && st.done && st.outcome !== 'correct' && !!st.mine;
+  const st = qEnsure(u), kind = qConfig(u).kind;
+  if (kind === 'dnd') return u.getAttribute('data-dnd-final') === 'compare' && st.done && st.outcome !== 'correct' && !!st.dndMine;   // drag question: the rows show the right cards first
+  return kind === 'input' && st.done && st.outcome !== 'correct' && !!st.mine;
 }
 function answerView(u, which) {
   const st = qEnsure(u), mine = which === 'mine';
   st.view = which;
+  if (qConfig(u).kind === 'dnd') dndCompareView(u, which);
   u.querySelectorAll('.q-input').forEach(function (qi, k) {
     const ins = qi.querySelectorAll('.q-in');
     if (mine) ins.forEach(function (i, j) { i.value = st.mine[k][j]; });
@@ -595,6 +597,7 @@ function playVideo(s) {
   const big = s.querySelector('.play-btn-big');
   videoStarted[n] = true;
   if (big) big.classList.add('hidden');
+  s.querySelectorAll('.narration-banner').forEach(function (b) { b.classList.add('hidden'); });   // the bubble introduces the video; once it plays the picture is clear
   if (!video) return;
   if (video.hasAttribute('data-pending-asset')) {
     setTimeout(function () { onVideoEnded(n); }, 1500);
@@ -965,7 +968,12 @@ function renderFinal(u, cfg, st, justChecked) {
   u.querySelectorAll('textarea[data-min-chars]').forEach(function (t) { t.disabled = true; });   // the explanation is final with the answer
   resetFreeHint(u);
   if (cfg.kind === 'dnd') {
-    if (unitScreen(u).getAttribute('data-dnd-final') === 'compare') { dndCompare(u); dndLock(u); return; }   // keep the learner's cards, show the right ones beside the wrong rows
+    if (unitScreen(u).getAttribute('data-dnd-final') === 'compare') {   // the right cards show first; "התשובה שלי" in the feedback swaps in the learner's own
+      if (!st.dndMine) st.dndMine = Array.prototype.map.call(u.querySelectorAll('.dnd-slot'), function (sl) { return sl.querySelector('.dnd-chip'); });
+      dndCompareView(u, st.outcome === 'correct' ? 'right' : (st.view || 'right'));
+      dndLock(u);
+      return;
+    }
     if (st.outcome === 'correct') { dndMark(u, true); dndLock(u); return; }
     dndMark(u, false);
     dndLock(u);
@@ -1181,29 +1189,38 @@ function dndMark(s, allRight) {
     sl.classList.add(allRight || dndSlotRight(sl) ? 'correct' : 'wrong');
   });
 }
-/* Final state, data-dnd-final="compare": every row keeps the card the learner put there, outlined green (right) or red
-   (wrong) and followed by a round check or cross; a wrong row also gets a second column with the right card.
-   Row order in the DOM: label, mark, slot (the learner's card), correct card; the row is a grid, so the columns line up. */
-function dndCompare(s) {
+/* Final state, data-dnd-final="compare": two views of the rows, never both at once.
+     'right' — every row holds a right card, outlined green with a round check (what the feedback opens on);
+     'mine'  — every row holds the card the learner put there (kept in st.dndMine), outlined green or red with a check or cross.
+   The "התשובה שלי" / "התשובה הנכונה" button in the feedback swaps them (answerView). The cards are real elements, moved
+   between the rows and the bank, so a row's card is always the one in the DOM. */
+function dndCompareView(s, which) {
+  const st = qEnsure(s), mine = which === 'mine';
+  const bank = dndBank(s);
+  const slots = Array.prototype.slice.call(s.querySelectorAll('.dnd-slot'));
+  const chips = Array.prototype.slice.call(s.querySelectorAll('.dnd-chip'));
   s.querySelectorAll('.dnd-mark, .dnd-fix').forEach(function (e) { e.remove(); });
-  s.querySelectorAll('.dnd-slot').forEach(function (sl) {
-    const right = dndSlotRight(sl);
+  chips.forEach(function (c) { bank.appendChild(c); });
+  const used = [];
+  slots.forEach(function (sl, k) {
+    let chip = null;
+    if (mine) chip = st.dndMine[k];
+    else {
+      const ok = (sl.getAttribute('data-accept') || '').split(/\s+/);
+      chip = chips.find(function (c) { return used.indexOf(c) === -1 && ok.indexOf(c.getAttribute('data-chip')) !== -1; }) || null;
+    }
+    if (chip) { used.push(chip); sl.appendChild(chip); }
+    sl.classList.toggle('filled', !!chip);
+    const right = mine ? dndSlotRight(sl) : true;
     sl.classList.remove('correct', 'wrong');
     sl.classList.add(right ? 'correct' : 'wrong');
     const mark = document.createElement('span');
     mark.className = 'dnd-mark ' + (right ? 'ok' : 'no');
     mark.setAttribute('role', 'img');
     mark.setAttribute('aria-label', uiText(right ? 'dnd-right' : 'dnd-wrong'));
-    sl.insertAdjacentElement('beforebegin', mark);   // next to the learner's card, on the label's side
-    if (right) return;
-    const id = (sl.getAttribute('data-accept') || '').split(/\s+/)[0];
-    const chip = s.querySelector('.dnd-chip[data-chip="' + id + '"]');
-    const fix = document.createElement('span');
-    fix.className = 'dnd-fix';
-    fix.textContent = chip ? chip.textContent : '';
-    fix.setAttribute('aria-label', uiText('dnd-correct-is') + ' ' + fix.textContent);
-    sl.insertAdjacentElement('afterend', fix);
+    sl.insertAdjacentElement('beforebegin', mark);   // on the slot's top corner
   });
+  dndStackRefresh(s);   // a card that came out of the bank must not stay hidden behind its stack
 }
 function dndLock(s) {
   s.classList.add('dnd-locked');

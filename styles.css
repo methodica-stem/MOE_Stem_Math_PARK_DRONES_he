@@ -27,7 +27,8 @@
   --fb-bg: #46494E;              /* feedback popup */
   --fb-text: #fcfafa;
   --fb-correct: #5BC27A;         /* "צדקת!" */
-  --fb-wrong: #C9A6F2;           /* retry / partial / wrong — never red */
+  --fb-wrong: #C9A6F2;           /* retry / partial — purple */
+  --fb-wrong-red: #FF6E6E;       /* "זו טעות" (final wrong): red, 3.4:1 on the grey box (large text) */
   --popup-bg: #FFF3C4;           /* help popup paper */
   --paper: #F3EBD8;              /* a table's paper card */
   --paper-line: #4E5A3E;         /* table lines */
@@ -206,11 +207,13 @@ button, input, select, textarea { font-family: inherit; }
 .fb-title { font-size: var(--fb-title-size); font-weight: 800; line-height: 1.3; }
 #feedback-popup.correct .fb-title { color: var(--fb-correct); }
 #feedback-popup.retry .fb-title, #feedback-popup.retryPartial .fb-title,
-#feedback-popup.partial .fb-title, #feedback-popup.wrong2 .fb-title { color: var(--fb-wrong); }
+#feedback-popup.partial .fb-title { color: var(--fb-wrong); }
+#feedback-popup.wrong2 .fb-title { color: var(--fb-wrong-red); }
 /* The icon is never the only signal — the title says the outcome in words. */
 .fb-icon { display: none; width: 36px; height: 36px; flex: 0 0 auto; background: center / contain no-repeat; }
 #feedback-popup.correct .fb-icon { display: inline-block; background-image: url('assets/images/ui-fb-correct.svg'); }
-#feedback-popup.wrong2 .fb-icon, #feedback-popup.partial .fb-icon { display: inline-block; background-image: url('assets/images/ui-fb-try.svg'); }
+#feedback-popup.partial .fb-icon { display: inline-block; background-image: url('assets/images/ui-fb-try.svg'); }
+#feedback-popup.wrong2 .fb-icon { display: inline-block; background-image: url('assets/images/ui-fb-wrong.svg'); }
 .fb-body p, .fb-body li { margin: 0 0 6px; font-size: var(--fb-size); font-weight: 400; line-height: 1.32; }
 
 /* Close X on a feedback box: only on a screen marked data-feedback-close, final feedback only. */
@@ -348,10 +351,10 @@ button, input, select, textarea { font-family: inherit; }
   padding-bottom: 90px; pointer-events: none;
 }
 .video-caption p {
-  margin: 0; max-width: 1400px; text-align: center;
+  margin: 0; max-width: 1700px; text-align: center;
   unicode-bidi: plaintext; white-space: pre-line;
   background: rgba(0,0,0,.75); color: #fff;
-  font-size: 34px; font-weight: 600; line-height: 1.4;
+  font-size: var(--text-size); font-weight: 600; line-height: 1.35;   /* the narration text size (40 px), was 34 */
   padding: 10px 24px; border-radius: 8px;
 }
 .play-btn-big {
@@ -775,11 +778,14 @@ button, input, select, textarea { font-family: inherit; }
    like the design's row of buttons. (The design is the older one-box question; the cards and boxes are the current mechanism.) */
 [data-sid="q6"] .q-text { top: 112px; right: 150px; width: 1580px; }
 [data-sid="q6"] .q-body, [data-sid="q6"] .q-instruction { margin-bottom: 8px; }
-[data-sid="q6"] .q-rows { position: absolute; right: 150px; top: 478px; width: 1580px; display: flex; justify-content: space-between; }
-[data-sid="q6"] .metric-row { position: relative; display: grid; grid-template-columns: 330px; grid-template-rows: 44px 88px 88px; row-gap: 8px; align-items: center; margin: 0; text-align: center; font-size: var(--text-size); font-weight: 700; }
+/* Equal air above and below the answer block (the label + box row): --q6-gap from the question text's last line (y 476) to the labels,
+   and the same --q6-gap from the boxes' bottom to the cards (labels 44 + 8 + boxes 88 = 140 px tall). */
+[data-sid="q6"] { --q6-gap: 40px; }
+[data-sid="q6"] .q-rows { position: absolute; right: 150px; top: calc(476px + var(--q6-gap)); width: 1580px; display: flex; justify-content: space-between; }
+[data-sid="q6"] .metric-row { position: relative; display: grid; grid-template-columns: 330px; grid-template-rows: 44px 88px; row-gap: 8px; align-items: center; margin: 0; text-align: center; font-size: var(--text-size); font-weight: 700; }
 [data-sid="q6"] .metric-row .dnd-slot { margin: 0; box-sizing: border-box; width: 330px; min-width: 330px; height: 88px; min-height: 88px; padding: 0; border-radius: 22px; }
 [data-sid="q6"] .dnd-chip { min-width: 325px; min-height: 84px; font-size: 40px; }
-[data-sid="q6"] .dnd-bank { position: absolute; right: 402px; top: 695px; width: 1075px; display: grid; grid-template-columns: 325px 325px 325px; column-gap: 50px; grid-auto-rows: 84px; margin: 0; min-height: 0; }
+[data-sid="q6"] .dnd-bank { position: absolute; right: 402px; top: calc(616px + 2 * var(--q6-gap)); width: 1075px; display: grid; grid-template-columns: 325px 325px 325px; column-gap: 50px; grid-auto-rows: 84px; margin: 0; min-height: 0; }
 [data-sid="q6"] .dnd-chip { width: 325px; }
 [data-sid="q6"] .dnd-chip[data-chip^="up"] { grid-area: 1 / 1; }
 [data-sid="q6"] .dnd-chip[data-chip^="dn"] { grid-area: 1 / 2; }
@@ -788,20 +794,22 @@ button, input, select, textarea { font-family: inherit; }
    the first one still in the bank, so after a card is dragged away the next one is already there underneath. */
 .dnd-chip.stack-behind, [data-dnd-stack] .dnd-chip.dragging { visibility: hidden; }
 [data-sid="q6"] .dnd-chip { align-self: end; justify-self: end; }
-/* The long explanation takes the whole left side (x 58-758, y 160-925, above the back arrow) and covers the card stacks, which are
-   locked by then; 40 / 50 px is the most that fits (was 34 / 46). The short retry box sits below the stacks, which are still needed. */
-#feedback-popup.fb-q6 { left: 190px; top: 732px; width: 1580px; min-height: 0; box-sizing: border-box; padding: 10px 36px 8px; }
+/* The explanation sits under the rows (which show the right cards first, "התשובה שלי" swaps in the learner's own) and covers the card
+   stacks, which are locked by then: from 16 px under the boxes (y 656) down to y 1046 in the white panel (foot 1062), full width up to the back arrow.
+   That box holds the title and five lines at 40 px (title 48 px), the most that fits (measured 351 of 356 px; 41 px overflows); was 33 / 44 px. */
+#feedback-popup.fb-q6 { left: 190px; top: 672px; width: 1580px; height: 374px; min-height: 0; box-sizing: border-box; padding: 10px 36px 8px; }
 #feedback-popup.fb-q6.show:not(.retry) { display: flex; flex-direction: column; justify-content: center; }
-#feedback-popup.fb-q6 .fb-title { font-size: 44px; }
-#feedback-popup.fb-q6 .fb-body p { font-size: 33px; margin-bottom: 2px; }
+#feedback-popup.fb-q6 .fb-title { font-size: 48px; }
+#feedback-popup.fb-q6 .fb-body p { font-size: 40px; margin-bottom: 2px; }
 [data-sid="q6"].dnd-locked .dnd-bank { visibility: hidden; }   /* the cards are not needed once the answer is final; the explanation takes their row */
-#feedback-popup.fb-q6.retry { left: 560px; top: 850px; width: 800px; min-height: 0; padding: 24px 36px 20px; }
+#feedback-popup.fb-q6.retry { left: 560px; top: 850px; width: 800px; height: auto; min-height: 0; padding: 24px 36px 20px; }
 #feedback-popup.fb-q6.retry .fb-body p { font-size: 40px; }
 [data-sid="q6"] .dnd-slot .dnd-chip { transform: none; }   /* a card dropped on a row sits squarely in it, not offset like a card in the stack */
 /* A card in a row fills the row exactly, so an outline drawn on the card IS the shape of the box (no gap, nothing bigger). */
 [data-sid="q6"] .dnd-slot .dnd-chip { width: 100%; height: 100%; min-width: 0; min-height: 0; padding: 4px 10px; }
-/* Final state (data-dnd-final="compare"): the learner's own cards stay, outlined thick in green (right) or red (wrong), each followed
-   by a round check or cross; a wrong row also shows the right card in a second column. The slot's own border is off. */
+/* Final state (data-dnd-final="compare"): the rows show the right cards first (green, checks); "התשובה שלי" in the feedback swaps in
+   the learner's own cards, outlined thick in green (right) or red (wrong) with a round check or cross. Never both at once.
+   The slot's own border is off. */
 [data-sid="q6"] .dnd-slot.correct, [data-sid="q6"] .dnd-slot.wrong { border: 2px solid transparent; }
 [data-sid="q6"] .dnd-slot.correct .dnd-chip { border: 8px solid var(--opt-correct); }
 [data-sid="q6"] .dnd-slot.wrong .dnd-chip { border: 8px solid var(--opt-wrong); }
@@ -811,10 +819,6 @@ button, input, select, textarea { font-family: inherit; }
 [data-sid="q6"] .dnd-mark::after { content: ''; position: absolute; inset: 15px; background: #fff;
   -webkit-mask: var(--mark-check) center / contain no-repeat; mask: var(--mark-check) center / contain no-repeat; }
 [data-sid="q6"] .dnd-mark.no::after { -webkit-mask-image: var(--mark-x); mask-image: var(--mark-x); }
-[data-sid="q6"] .dnd-fix { box-sizing: border-box; width: 330px; height: 88px; display: flex; align-items: center; justify-content: center;
-  padding: 4px 10px; border: 8px solid var(--opt-correct); border-radius: 22px; color: #1A1A1A; font-size: 40px; font-weight: 700;
-  background: linear-gradient(180deg, #DCE5F0 0%, #B3C1D5 45%, #8E9FB9 100%);
-  box-shadow: inset 0 3px 3px rgba(255,255,255,.75), 0 3px 5px rgba(40,60,90,.35); }
 /* ---- 12 · park-lights ---- */
 /* the clip is the whole 1920x1080 frame, shown only through the window glass (the monitor, sill and desk stay as in the picture) */
 [data-sid="park-lights"] .fx-lightsclip { left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden;
@@ -874,9 +878,8 @@ button, input, select, textarea { font-family: inherit; }
 .eq-line { text-align: right; }
 [data-sid="q5"] .eq-line { text-align: center; }
 
-/* columns, from the label: check or cross | the learner's card | the right card (only on a wrong row); explicit so an empty column keeps its place */
+/* a row: the label above, the box (with its check / cross badge) under it */
 [data-sid="q6"] .metric-row .dnd-slot { grid-row: 2; }
-[data-sid="q6"] .metric-row .dnd-fix { grid-row: 3; }   /* the right card, under the learner's card, only on a wrong row */
 [data-sid="q1"] .q-fill { display: grid; grid-template-columns: 440px 298px; justify-content: start; }
 [data-sid="q1"] .q-instruction + .q-fill { margin-top: 48px; }   /* the two typed answers sit lower, clear of the question text */
 
