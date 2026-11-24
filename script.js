@@ -1868,9 +1868,20 @@ HOOKS['finish'] = {
 };
 
 /* ---------------- Narration of a question screen (15) ----------------
-   The round speaker button under the help button reads the question aloud. No sound starts by itself: the learner
-   presses it, and presses it again to stop. It shows a pause mark while the voice plays; leaving the screen pauses
-   the audio (pauseAllMedia) and the media events below put the button back. */
+   The round speaker button under the help button reads the question aloud. The voice starts by itself the first time the
+   screen opens (developer, 2026-11-24); a return visit stays quiet, and the button replays it. Pressed while it plays, the
+   button stops it. It shows a pause mark while the voice plays; leaving the screen pauses the audio (pauseAllMedia) and
+   the media events below put the button back. If the browser blocks the sound, nothing happens and the button is there. */
+HOOKS['q7'] = {
+  enter: function (s) {
+    const a = s.querySelector('.narr-audio');
+    if (!a || s._narrStarted) return;
+    s._narrStarted = true;
+    try { a.currentTime = 0; } catch (e) {}
+    const p = a.play();
+    if (p && p.catch) p.catch(function () {});
+  }
+};
 ['play', 'pause', 'ended'].forEach(function (ev) {
   document.addEventListener(ev, function (e) {
     const a = e.target;
