@@ -186,7 +186,7 @@
     <p>מהו המספר שנמצא באמצע הסדרה? ומה מתקבל כשנחלק את סכום כל הנתונים ב-5?</p>
   </div>
   <div class="q-card">
-    <div class="applet-frame q-applet"><iframe src="assets/app/q3-sort.html?v=2" title="יישומון: סידור מספרי התמונות מהקטן לגדול, אחרי התיקון" scrolling="no"></iframe></div>
+    <div class="applet-frame q-applet"><iframe src="assets/app/q3-sort.html?v=3" title="יישומון: סידור מספרי התמונות מהקטן לגדול, אחרי התיקון" scrolling="no"></iframe></div>
     <div class="q-text">
       <p class="q-body">3. ארז העלה מחשבה מעניינת:</p>
       <p class="q-body">"נראה לי שבסדרת הנתונים המתוקנת, הממוצע והחציון שווים זה לזה!".</p>
@@ -403,7 +403,7 @@
   <img class="screen-bg" src="assets/images/control-center-bg.jpg" alt="">
   <div class="narration-banner"><p>לחצו על מסך המחשב, קחו שליטה על מרכז הבקרה ועזרו לארז וליהי להשלים את המשימה.</p></div>
   <!-- A click on the monitor grows it to full screen (HOOKS['control-center']); the arrow waits for APPLET_DONE from the applet (slide 28 notes). -->
-  <div class="applet-frame monitor-frame"><iframe src="assets/app/control-center.html?v=4" title="יישומון: מרכז הבקרה של הפארק"></iframe><button class="monitor-open" type="button" aria-label="לחצו כדי להגדיל את מסך מרכז הבקרה"></button></div>
+  <div class="applet-frame monitor-frame"><iframe src="assets/app/control-center.html?v=5" title="יישומון: מרכז הבקרה של הפארק"></iframe><button class="monitor-open" type="button" aria-label="לחצו כדי להגדיל את מסך מרכז הבקרה"></button></div>
   <button class="nav-btn nav-prev" type="button" aria-label="חזרה"></button>
   <button class="nav-btn nav-next hidden" type="button" aria-label="המשך"></button>
 </section>
@@ -440,6 +440,8 @@
   <div class="q-overlay"></div>
   <div class="q-panel"></div>
   <button class="help-btn" type="button" data-popup="help-q7">עזרה</button>
+  <button class="narr-btn" type="button" aria-label="השמעת הקריינות" aria-pressed="false"></button>
+  <audio class="narr-audio" preload="none" src="assets/audio/screen15_narration.mp3"></audio>
   <div class="popup-src" id="help-q7" hidden>
     <p>חשבו איזה מדד סטטיסטי מחלק את הנתונים בדיוק לשני חצאים, כך שנוכל לדעת בוודאות מה קורה <span class="nb">ב-<span class="ltr">50%</span></span> "העליונים" של הטיסות?</p>
     <p>האם זה הממוצע, הטווח או החציון?</p>
@@ -483,7 +485,7 @@
 
 <!-- ================= SCREEN 16 — סיום: פסטיבל משפחות (שקפים 32-33) ================= -->
 <section class="screen" data-screen="16" data-sid="finish" data-type="finish" tabindex="-1">
-  <img class="screen-bg" src="assets/images/finish-bg.jpg" alt="">
+  <video class="screen-bg finish-vid" muted playsinline preload="auto" disablepictureinpicture aria-hidden="true" poster="assets/images/finish-bg.jpg" src="assets/videos/finish-festival.mp4"></video>
   <img class="fx fx-drone" src="assets/images/finish-drone.png" alt="">
   <p class="sr-only">אנימציה: רחפן מרחף מעל פסטיבל משפחות בפארק, ברקע נשמעים קולות ההופעה והקהל, ומעליהם נשמע קול הרחפן.</p>
   <div class="narration-banner"><p>אחרי שהרחפן מדגם "נץ" הוכיח את עצמו בטיסות המבחן, הוא כבר יצא למשימה הבאה!</p><p>הפעם הוא מרחף מעל פסטיבל משפחות, ועוזר לשמור על בטיחות המשתתפים.</p></div>

@@ -1850,13 +1850,47 @@ HOOKS['test-six'] = {
 };
 /* finish (slide 32): the drone loops over the festival, with the show far away and the rotors close by. */
 HOOKS['finish'] = {
-  enter: function () {
+  enter: function (s) {
     hookClear();
     refreshSoundButtons();
     hookAfter(200, function () { SFX.play('show'); SFX.play('drone'); });
+    /* The festival itself moves a little (leaves, flags, balloons, the children): a silent clip that plays once and holds its
+       last frame (house rule: clips play once). The camera is locked, so the drone layer stays where it is over the sky.
+       With reduced motion the poster (the first frame) stays still. */
+    const v = s.querySelector('.finish-vid');
+    if (v && !reducedMotion()) {
+      try { v.currentTime = 0; } catch (e) {}
+      const p = v.play();
+      if (p && p.catch) p.catch(function () {});
+    }
   },
-  leave: hookClear
+  leave: function (s) { const v = s.querySelector('.finish-vid'); if (v) { try { v.pause(); } catch (e) {} } hookClear(); }
 };
+
+/* ---------------- Narration of a question screen (15) ----------------
+   The round speaker button under the help button reads the question aloud. No sound starts by itself: the learner
+   presses it, and presses it again to stop. It shows a pause mark while the voice plays; leaving the screen pauses
+   the audio (pauseAllMedia) and the media events below put the button back. */
+['play', 'pause', 'ended'].forEach(function (ev) {
+  document.addEventListener(ev, function (e) {
+    const a = e.target;
+    if (!a || !a.classList || !a.classList.contains('narr-audio')) return;
+    const btn = a.parentElement.querySelector('.narr-btn');
+    if (!btn) return;
+    btn.classList.toggle('playing', ev === 'play');
+    btn.setAttribute('aria-pressed', String(ev === 'play'));
+  }, true);
+});
+document.addEventListener('click', function (e) {
+  const btn = e.target.closest && e.target.closest('.narr-btn');
+  if (!btn) return;
+  const a = btn.parentElement.querySelector('.narr-audio');
+  if (!a) return;
+  if (!a.paused) { a.pause(); try { a.currentTime = 0; } catch (err) {} return; }
+  try { a.currentTime = 0; } catch (err) {}
+  const p = a.play();
+  if (p && p.catch) p.catch(function () {});
+});
 
 /* ---------------- Start ---------------- */
 document.addEventListener('DOMContentLoaded', function () {

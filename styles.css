@@ -892,6 +892,17 @@ button, input, select, textarea { font-family: inherit; }
 .sound-btn.is-off { background-image: url('assets/images/ui-sound-off.svg'), url('assets/images/ui-btn-round.png'); }
 .sound-btn:hover { filter: drop-shadow(0px 6px 10px rgba(0,0,0,0.38)) brightness(1.25); }
 
+/* Narration button of a question screen (15): the same round skin and speaker as the sound button, under the help button
+   at the top left of the panel; a pause mark while the voice plays. */
+.narr-btn {
+  position: absolute; left: 72px; top: 172px; width: 84px; height: 84px; padding: 0; border: none; z-index: 14;
+  background: url('assets/images/ui-sound.svg') center / 44% no-repeat, url('assets/images/ui-btn-round.png') center / contain no-repeat;
+  filter: drop-shadow(0px 6px 10px rgba(0,0,0,0.38)); cursor: pointer;
+}
+.narr-btn.playing { background-image: url('assets/images/ui-sound-pause.svg'), url('assets/images/ui-btn-round.png'); background-size: 38%, contain; }
+.narr-btn:hover { filter: drop-shadow(0px 6px 10px rgba(0,0,0,0.38)) brightness(1.25); }
+.narr-btn:focus-visible { outline: 4px solid #fff; outline-offset: 4px; }
+
 /* ---- party: gather, flash, phone rises, photo flies into the post, likes ---- */
 .screen[data-sid="party"] { background: #150f26; }
 /* The video (the young people arrive and huddle) plays on entry; when it ends, script.js adds .party-go
