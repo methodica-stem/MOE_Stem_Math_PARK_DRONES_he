@@ -1854,8 +1854,8 @@ HOOKS['finish'] = {
     hookClear();
     refreshSoundButtons();
     hookAfter(200, function () { SFX.play('show'); SFX.play('drone'); });
-    /* The festival itself moves a little (leaves, flags, balloons, the children): a silent clip that plays once and holds its
-       last frame (house rule: clips play once). The camera is locked, so the drone layer stays where it is over the sky.
+    /* The festival itself moves a little (leaves, flags, balloons, the children): a silent clip that loops (developer,
+       2026-11-24; it runs forward and then backward, 7.75 s, so the loop has no jump and no ghosting). The camera is locked, so the drone layer stays where it is over the sky.
        With reduced motion the poster (the first frame) stays still. */
     const v = s.querySelector('.finish-vid');
     if (v && !reducedMotion()) {
