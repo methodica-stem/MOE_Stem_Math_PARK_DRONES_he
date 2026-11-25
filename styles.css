@@ -946,3 +946,10 @@ button, input, select, textarea { font-family: inherit; }
 
 /* a prefix and its number stay on one line ("מ-50%") */
 .nb { white-space: nowrap; }
+
+/* The Ministry of Education logo on the opening screen (the skill's .moe-logo; references/logo.md). */
+.moe-logo { position: absolute; top: 28px; right: 32px; z-index: 3; width: 240px; }
+.moe-logo img { display: block; width: 100%; height: auto; }
+.moe-logo--card { box-sizing: content-box; padding: 22px 34px; border-radius: 28px;
+  background: radial-gradient(ellipse at center, rgba(255,255,255,.92) 0%, rgba(255,255,255,.6) 65%, rgba(255,255,255,0) 100%); }
+.moe-logo--left { right: auto; left: 32px; }
